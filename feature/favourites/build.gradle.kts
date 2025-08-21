@@ -1,0 +1,12 @@
+plugins {
+    alias(libs.plugins.convention.android.library.compose)
+    alias(libs.plugins.convention.android.feature)
+}
+
+android {
+    namespace = "com.srizan.technonextcodingassessment.favourites"
+}
+
+dependencies {
+    implementation(projects.common)
+}

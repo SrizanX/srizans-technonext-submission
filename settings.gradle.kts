@@ -1,4 +1,5 @@
 pluginManagement {
+    includeBuild("build-logic")
     repositories {
         google {
             content {
@@ -18,6 +19,21 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-rootProject.name = "Srizan's TechnoNext Submission "
+rootProject.name = "SrizansTechnoNextSubmission"
 include(":app")
+include(":common")
+// Core modules
+include(":core:domain")
+include(":core:domain-model")
+include(":core:data")
+include(":core:data-cache")
+include(":core:data-network")
+// Features modules
+include(":feature:posts")
+include(":feature:favourites")
+include(":feature:signin")
+include(":feature:signup")
+include(":core:ui-design-system")
+include(":core:ui")

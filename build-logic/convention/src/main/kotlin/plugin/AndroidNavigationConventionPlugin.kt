@@ -1,0 +1,22 @@
+package plugin
+
+import extension.libs
+import org.gradle.api.Plugin
+import org.gradle.api.Project
+import org.gradle.kotlin.dsl.add
+import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.dependencies
+
+class AndroidNavigationConventionPlugin : Plugin<Project> {
+    override fun apply(target: Project) {
+        with(target) {
+            with(pluginManager) {
+                apply("org.jetbrains.kotlin.plugin.serialization")
+            }
+            dependencies {
+                add("implementation", libs.findLibrary("androidx-navigation-compose").get())
+                add("implementation", libs.findLibrary("androidx-hilt-navigation-compose").get())
+            }
+        }
+    }
+}
