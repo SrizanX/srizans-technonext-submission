@@ -28,7 +28,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.srizan.technonextcodingassessment.designsystem.theme.SrizansTechnoNextSubmissionTheme
+import com.srizan.technonextcodingassessment.designsystem.theme.AppTheme
 
 @Composable
 fun SignInScreen(
@@ -132,7 +132,7 @@ fun SignInScreen(
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun SignInPreview() {
-    SrizansTechnoNextSubmissionTheme {
+    AppTheme {
         Surface {
             SignInScreen(
                 onSignInClick = { _, _ -> },

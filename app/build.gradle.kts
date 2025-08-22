@@ -10,6 +10,10 @@ android {
         versionCode = 1
         versionName = "1.0"
     }
+
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {
@@ -18,6 +22,8 @@ dependencies {
         implementation(signin)
         implementation(signup)
         implementation(posts)
-        implementation(favourites)
+        implementation(postsFavourites)
     }
+
+    implementation(libs.timber)
 }

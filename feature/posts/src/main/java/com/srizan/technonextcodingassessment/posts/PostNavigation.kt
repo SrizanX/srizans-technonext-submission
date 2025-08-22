@@ -16,8 +16,12 @@ object PostNavKey
 fun NavGraphBuilder.postGraph() {
     composable<PostNavKey> {
         val viewModel: PostViewModel = hiltViewModel()
-        val poss by viewModel.posts.collectAsStateWithLifecycle(initialValue = emptyList())
-        PostScreen(posts = poss )
+        val postUiState by viewModel.posts.collectAsStateWithLifecycle()
+        PostScreen(
+            postUiState = postUiState,
+            onRefresh = viewModel::refreshPosts,
+            onFavouriteClick = viewModel::toggleFavourite
+        )
     }
 }
 

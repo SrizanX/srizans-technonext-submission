@@ -32,7 +32,7 @@ include(":core:data-cache")
 include(":core:data-network")
 // Features modules
 include(":feature:posts")
-include(":feature:favourites")
+include(":feature:posts-favourites")
 include(":feature:signin")
 include(":feature:signup")
 include(":core:ui-design-system")

@@ -8,5 +8,6 @@ data class PostEntity(
     @PrimaryKey(autoGenerate = false) val id: Int,
     val userId: Int,
     val title: String,
-    val body: String
+    val body: String,
+    val isFavourite: Boolean = false
 )

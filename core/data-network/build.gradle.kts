@@ -8,6 +8,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.domain)
     implementation(platform(libs.okhttp.bom))
     implementation(libs.okhttp)
     implementation(libs.okhttp.loggingInterceptor)

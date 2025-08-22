@@ -1,6 +1,9 @@
 package com.srizan.technonextcodingassessment.favourites
 
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -14,7 +17,12 @@ object FavouritesNavKey
 fun NavGraphBuilder.favouritesGraph() {
     composable<FavouritesNavKey> {
         val viewModel: FavouritesViewModel = hiltViewModel()
-        FavouritesScreen()
+        val favouritePostsUiState by viewModel.posts.collectAsStateWithLifecycle()
+        FavouritesScreen(
+            postUiState = favouritePostsUiState,
+            onFavouriteClick = viewModel::toggleFavourite,
+            modifier = Modifier
+        )
     }
 }
 

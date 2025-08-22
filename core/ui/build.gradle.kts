@@ -8,8 +8,6 @@ android {
 
 dependencies {
     api(projects.core.uiDesignSystem)
-
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
+    implementation(projects.core.domainModel)
+    implementation(libs.compose.material3)
 }
