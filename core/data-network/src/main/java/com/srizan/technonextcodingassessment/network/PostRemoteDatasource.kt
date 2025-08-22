@@ -3,7 +3,7 @@ package com.srizan.technonextcodingassessment.network
 import com.google.gson.Gson
 import com.google.gson.JsonParseException
 import com.google.gson.JsonSyntaxException
-import com.srizan.technonextcodingassessment.domain.PostDataSource
+import com.srizan.technonextcodingassessment.domain.datasource.PostDataSource
 import com.srizan.technonextcodingassessment.model.ApiResult
 import com.srizan.technonextcodingassessment.model.Post
 import com.srizan.technonextcodingassessment.network.model.PostApiMapper

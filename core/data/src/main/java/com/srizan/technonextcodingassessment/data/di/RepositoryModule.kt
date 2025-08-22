@@ -2,8 +2,10 @@ package com.srizan.technonextcodingassessment.data.di
 
 import com.srizan.technonextcodingassessment.data.repository.AuthenticationRepositoryImpl
 import com.srizan.technonextcodingassessment.data.repository.PostRepositoryImpl
-import com.srizan.technonextcodingassessment.domain.AuthenticationRepository
-import com.srizan.technonextcodingassessment.domain.PostRepository
+import com.srizan.technonextcodingassessment.data.repository.PreferenceRepositoryImpl
+import com.srizan.technonextcodingassessment.domain.repository.AuthenticationRepository
+import com.srizan.technonextcodingassessment.domain.repository.PostRepository
+import com.srizan.technonextcodingassessment.domain.repository.PreferenceRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -18,4 +20,8 @@ interface RepositoryModule {
 
     @Binds
     fun bindAuthenticationRepository(repo: AuthenticationRepositoryImpl): AuthenticationRepository
+
+    @Binds
+    fun bindPreferenceRepository(repo: PreferenceRepositoryImpl): PreferenceRepository
+
 }

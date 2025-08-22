@@ -2,7 +2,7 @@ package com.srizan.technonextcodingassessment.data.repository
 
 import com.srizan.technonextcodingassessment.cache.dao.PostDao
 import com.srizan.technonextcodingassessment.cache.entity.PostEntity
-import com.srizan.technonextcodingassessment.domain.PostRepository
+import com.srizan.technonextcodingassessment.domain.repository.PostRepository
 import com.srizan.technonextcodingassessment.model.ApiResult
 import com.srizan.technonextcodingassessment.model.Post
 import com.srizan.technonextcodingassessment.network.PostRemoteDatasource

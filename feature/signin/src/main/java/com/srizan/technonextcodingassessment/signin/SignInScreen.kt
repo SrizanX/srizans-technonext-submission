@@ -51,16 +51,16 @@ fun SignInScreen(
         )
 
         var email by rememberSaveable(stateSaver = TextFieldValue.Saver) {
-            mutableStateOf(TextFieldValue("write2srizan@gmail.com"))
+            mutableStateOf(TextFieldValue("a@b.com"))
         }
         var password by rememberSaveable(stateSaver = TextFieldValue.Saver) {
-            mutableStateOf(TextFieldValue("12345678"))
+            mutableStateOf(TextFieldValue("12345"))
         }
         var emailError by remember { mutableStateOf<String?>(null) }
         var passwordError by remember { mutableStateOf<String?>(null) }
 
         val isEmailValid = email.text.isNotEmpty() && email.text.contains("@") && email.text.contains(".")
-        val isPasswordValid = password.text.length >= 6
+        val isPasswordValid = password.text.length >= 5
 
         OutlinedTextField(
             value = email,

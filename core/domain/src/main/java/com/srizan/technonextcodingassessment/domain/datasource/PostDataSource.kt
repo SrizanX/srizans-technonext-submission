@@ -1,4 +1,4 @@
-package com.srizan.technonextcodingassessment.domain
+package com.srizan.technonextcodingassessment.domain.datasource
 
 import com.srizan.technonextcodingassessment.model.ApiResult
 import com.srizan.technonextcodingassessment.model.Post

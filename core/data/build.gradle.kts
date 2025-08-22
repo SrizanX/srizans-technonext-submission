@@ -10,6 +10,7 @@ android {
 dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.dataCache)
+    implementation(projects.core.dataDatastore)
     implementation(projects.core.dataNetwork)
     implementation(libs.kotlinx.coroutines.core)
 }

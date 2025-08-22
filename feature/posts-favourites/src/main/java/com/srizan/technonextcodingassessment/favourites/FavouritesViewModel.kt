@@ -2,7 +2,7 @@ package com.srizan.technonextcodingassessment.favourites
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.srizan.technonextcodingassessment.domain.PostRepository
+import com.srizan.technonextcodingassessment.domain.repository.PostRepository
 import com.srizan.technonextcodingassessment.model.Post
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

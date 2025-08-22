@@ -1,0 +1,8 @@
+syntax = "proto3";
+option java_package = "com.srizan.technonextcodingassessment.datastore";
+option java_multiple_files = true;
+
+message AppsProtoPrefs {
+  bool isUserLoggedIn = 1;
+  string userEmail = 2;
+}

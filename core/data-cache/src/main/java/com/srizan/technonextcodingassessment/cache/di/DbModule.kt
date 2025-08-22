@@ -26,4 +26,7 @@ object DbModule {
     @Provides
     fun providePostDao(db: AppDatabase) = db.postDao()
 
+    @Provides
+    fun provideUserDao(db: AppDatabase) = db.userDao()
+
 }

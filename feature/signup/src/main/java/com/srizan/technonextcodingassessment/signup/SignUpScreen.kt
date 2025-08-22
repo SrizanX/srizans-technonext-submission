@@ -3,65 +3,58 @@ package com.srizan.technonextcodingassessment.signup
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun SignUpScreen(modifier: Modifier = Modifier) {
+fun SignUpScreenContent(
+    uiState: SignUpViewModel.SignUpUiState,
+    onEmailChange: (String) -> Unit = {},
+    onPasswordChange: (String) -> Unit = {},
+    onConfirmPasswordChange: (String) -> Unit = {},
+    onRegisterClick: () -> Unit = {},
+    modifier: Modifier = Modifier
+) {
     Column(
         modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp, alignment = Alignment.CenterVertically)
     ) {
         Text("Sign Up Screen", modifier = modifier)
-        var email by rememberSaveable(stateSaver = TextFieldValue.Saver) {
-            mutableStateOf(TextFieldValue("example@example.com", TextRange(0, 7)))
-        }
 
-        var password by rememberSaveable(stateSaver = TextFieldValue.Saver) {
-            mutableStateOf(TextFieldValue("Password", TextRange(0, 7)))
-        }
-
-        var confirmPassword by rememberSaveable(stateSaver = TextFieldValue.Saver) {
-            mutableStateOf(TextFieldValue("Confirm Password", TextRange(0, 7)))
-        }
         OutlinedTextField(
-            value = email,
-            onValueChange = {
-                email = it
-            },
+            value = uiState.email,
+            onValueChange = onEmailChange,
+            label = { Text("Email") }
         )
 
         OutlinedTextField(
-
-            value = password,
-            onValueChange = {
-                password = it
-            },
-
+            value = uiState.password,
+            onValueChange = onPasswordChange,
+            label = { Text("Password") }
         )
 
         OutlinedTextField(
-            value = confirmPassword,
-            onValueChange = {
-                confirmPassword = it
-            },
+            value = uiState.confirmPassword,
+            onValueChange = onConfirmPasswordChange,
+            label = { Text("Confirm Password") }
         )
 
         OutlinedButton(
-            onClick = {}) {
-            Text("Sign Up")
+            onClick = onRegisterClick,
+            enabled = !uiState.isLoading
+        ) {
+            Text(if (uiState.isLoading) "Signing Up..." else "Sign Up")
+        }
+
+        uiState.errorMessage?.let {
+            Text(text = it, color = MaterialTheme.colorScheme.error)
         }
     }
 }

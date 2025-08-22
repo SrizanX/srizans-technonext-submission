@@ -1,8 +1,12 @@
 package com.srizan.technonextcodingassessment.signin
 
+import android.widget.Toast
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.srizan.technonextcodingassessment.ui.HandleEvent
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -14,11 +18,28 @@ fun NavGraphBuilder.signInGraph(
 ) {
     composable<SignInNavKey> {
         val viewModel: SignInViewModel = hiltViewModel()
-        SignInScreen(
-            onSignInClick = { email, password ->
-                viewModel.signIn(email, password);
+        val context = LocalContext.current
+
+        LaunchedEffect(Unit) {
+            if (viewModel.isUserLoggedIn()) {
                 navigateToPostsScreen()
-            },
+            }
+        }
+
+        HandleEvent(viewModel.uiEvent) { event ->
+            when (event) {
+
+                is SignInViewModel.SignInUiEvent.SignInError -> {
+                    Toast.makeText(context, event.message, Toast.LENGTH_LONG).show()
+                }
+
+                SignInViewModel.SignInUiEvent.SignInSuccess -> {
+                    navigateToPostsScreen()
+                }
+            }
+        }
+        SignInScreen(
+            onSignInClick = viewModel::signIn,
             onSignUpClick = navigateToSignUpScreen,
             onForgotPasswordClick = navigateToSignUpScreen
         )
