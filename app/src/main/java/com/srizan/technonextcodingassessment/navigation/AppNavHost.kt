@@ -25,10 +25,9 @@ fun AppNavHost(
             navigateToPostsScreen = {
                 navController.navigateClearingStack(PostNavKey)
             })
-        signUpGraph(
-            navigateToPostsScreen = {
-                navController.navigateClearingStack(PostNavKey)
-            })
+        signUpGraph(navigateToPostsScreen = {
+            navController.navigateClearingStack(PostNavKey)
+        }, popBack = { navController.popBackStack() })
         postGraph()
         favouritesGraph()
     }

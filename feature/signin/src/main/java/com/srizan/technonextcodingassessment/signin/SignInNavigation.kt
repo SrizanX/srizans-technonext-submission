@@ -2,8 +2,10 @@ package com.srizan.technonextcodingassessment.signin
 
 import android.widget.Toast
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.srizan.technonextcodingassessment.ui.HandleEvent
@@ -18,6 +20,7 @@ fun NavGraphBuilder.signInGraph(
 ) {
     composable<SignInNavKey> {
         val viewModel: SignInViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         val context = LocalContext.current
 
         LaunchedEffect(Unit) {
@@ -39,9 +42,9 @@ fun NavGraphBuilder.signInGraph(
             }
         }
         SignInScreen(
+            uiState = uiState,
             onSignInClick = viewModel::signIn,
             onSignUpClick = navigateToSignUpScreen,
-            onForgotPasswordClick = navigateToSignUpScreen
         )
     }
 }

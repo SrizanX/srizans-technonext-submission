@@ -3,6 +3,7 @@ package com.srizan.technonextcodingassessment.data.repository
 import com.srizan.technonextcodingassessment.cache.dao.UserDao
 import com.srizan.technonextcodingassessment.cache.entity.UserEntity
 import com.srizan.technonextcodingassessment.domain.repository.AuthenticationRepository
+import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 class AuthenticationRepositoryImpl @Inject constructor(
@@ -23,6 +24,7 @@ class AuthenticationRepositoryImpl @Inject constructor(
     }
 
     override suspend fun signIn(email: String, password: String): Result<Unit> {
+        delay(3000) // Simulate network delay
         val user =
             userDao.getUserByEmail(email) ?: return Result.failure(Exception("Invalid credentials"))
         return if (password == user.password) {

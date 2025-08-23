@@ -4,9 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import kotlinx.serialization.Serializable
 
@@ -19,13 +17,11 @@ fun NavGraphBuilder.favouritesGraph() {
         val viewModel: FavouritesViewModel = hiltViewModel()
         val favouritePostsUiState by viewModel.posts.collectAsStateWithLifecycle()
         FavouritesScreen(
-            postUiState = favouritePostsUiState,
+            posts = favouritePostsUiState,
             onFavouriteClick = viewModel::toggleFavourite,
+            onClearAllClick = {},
+            onLogoutClick = {},
             modifier = Modifier
         )
     }
-}
-
-fun NavController.navigateToFavouritesScreen(navOptions: NavOptions? = null) {
-    navigate(FavouritesNavKey, navOptions)
 }

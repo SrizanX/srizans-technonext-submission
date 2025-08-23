@@ -19,11 +19,11 @@ class SignUpViewModel @Inject constructor(
 ) : ViewModel() {
 
     // UI state
-    private val _uiState = MutableStateFlow(SignUpUiState())
-    val uiState: StateFlow<SignUpUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(UiState())
+    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     // UI events for one-time actions (e.g., navigation)
-    private val _uiEvent = Channel<SignUpUiEvent>(Channel.BUFFERED)
+    private val _uiEvent = Channel<UiEvent>(Channel.BUFFERED)
     val uiEvent = _uiEvent.receiveAsFlow()
 
     fun register(email: String, password: String, confirmPassword: String) {
@@ -67,7 +67,7 @@ class SignUpViewModel @Inject constructor(
             // Perform registration
             authenticationRepository.signUp(email, password).fold(onSuccess = {
                 _uiState.value = _uiState.value.copy(isLoading = false)
-                _uiEvent.send(SignUpUiEvent.RegisterSuccess)
+                _uiEvent.send(UiEvent.RegisterSuccess)
             }, onFailure = { exception ->
                 _uiState.value = _uiState.value.copy(
                     isLoading = false, errorMessage = exception.message ?: "Registration failed"
@@ -97,7 +97,7 @@ class SignUpViewModel @Inject constructor(
         password.length >= 8 && password.any { it.isDigit() } && password.any { !it.isLetterOrDigit() }
 
     // UI state data class
-    data class SignUpUiState(
+    data class UiState(
         val email: String = "",
         val password: String = "",
         val confirmPassword: String = "",
@@ -106,8 +106,8 @@ class SignUpViewModel @Inject constructor(
     )
 
     // UI event sealed class
-    sealed class SignUpUiEvent {
-        data object RegisterSuccess : SignUpUiEvent()
-        data class RegisterError(val message: String) : SignUpUiEvent()
+    sealed class UiEvent {
+        data object RegisterSuccess : UiEvent()
+        data class RegisterError(val message: String) : UiEvent()
     }
 }

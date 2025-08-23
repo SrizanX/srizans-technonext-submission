@@ -5,10 +5,15 @@ import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -32,8 +37,8 @@ import com.srizan.technonextcodingassessment.designsystem.theme.AppTheme
 
 @Composable
 fun SignInScreen(
+    uiState: SignInViewModel.UiState,
     onSignInClick: (String, String) -> Unit,
-    onForgotPasswordClick: () -> Unit,
     onSignUpClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -59,7 +64,8 @@ fun SignInScreen(
         var emailError by remember { mutableStateOf<String?>(null) }
         var passwordError by remember { mutableStateOf<String?>(null) }
 
-        val isEmailValid = email.text.isNotEmpty() && email.text.contains("@") && email.text.contains(".")
+        val isEmailValid =
+            email.text.isNotEmpty() && email.text.contains("@") && email.text.contains(".")
         val isPasswordValid = password.text.length >= 5
 
         OutlinedTextField(
@@ -102,18 +108,15 @@ fun SignInScreen(
                 if (isEmailValid && isPasswordValid) {
                     onSignInClick(email.text, password.text)
                 }
-            },
-            enabled = isEmailValid && isPasswordValid,
-            modifier = Modifier.fillMaxWidth()
+            }, enabled = isEmailValid && isPasswordValid, modifier = Modifier.fillMaxWidth()
         ) {
+            if (uiState.isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+            }
             Text("Sign In")
-        }
-
-        TextButton(
-            onClick = onForgotPasswordClick,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Forgot Password?")
         }
 
         Row(
@@ -135,9 +138,9 @@ private fun SignInPreview() {
     AppTheme {
         Surface {
             SignInScreen(
+                uiState = SignInViewModel.UiState(),
                 onSignInClick = { _, _ -> },
-                onForgotPasswordClick = {},
-                onSignUpClick = {}
+                onSignUpClick = {},
             )
         }
     }

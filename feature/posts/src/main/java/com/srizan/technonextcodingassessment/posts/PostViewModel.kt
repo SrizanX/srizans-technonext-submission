@@ -1,5 +1,6 @@
 package com.srizan.technonextcodingassessment.posts
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.srizan.technonextcodingassessment.domain.repository.PostRepository
@@ -30,6 +31,8 @@ class PostViewModel @Inject constructor(
     )
 
     init {
+        //log
+        Log.d("asd", "post vm init")
         viewModelScope.launch {
             postRepository.getPosts().collectIndexed { index, result ->
                 posts.update { it.copy(posts = result) }
@@ -40,6 +43,12 @@ class PostViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        //log
+        Log.d("asd", "post vm cleared")
     }
 
     fun refreshPosts() {
@@ -74,6 +83,12 @@ class PostViewModel @Inject constructor(
         viewModelScope.launch {
             if (post.isFavourite) postRepository.unmarkPostAsFavourite(post.id)
             else postRepository.markPostAsFavourite(post.id)
+        }
+    }
+
+    fun deleteAllPosts() {
+        viewModelScope.launch {
+            postRepository.deleteAllPosts()
         }
     }
 }

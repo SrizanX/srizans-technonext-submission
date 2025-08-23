@@ -1,38 +1,32 @@
 package com.srizan.technonextcodingassessment.favourites
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.srizan.technonextcodingassessment.domain.repository.PostRepository
 import com.srizan.technonextcodingassessment.model.Post
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
-data class FavouritePostsUiState(
-    val posts: List<Post> = emptyList(),
-    val isRefreshing: Boolean = false,
-    val errorMessage: String? = null
-)
 
 @HiltViewModel
 class FavouritesViewModel @Inject constructor(
     private val postRepository: PostRepository
 ) : ViewModel() {
-    val posts = MutableStateFlow(
-        FavouritePostsUiState(
-            posts = emptyList(), isRefreshing = false, errorMessage = null
-        )
+    val posts = postRepository.getFavouritePosts().stateIn(
+        viewModelScope, started = SharingStarted.Lazily, initialValue = emptyList()
     )
 
     init {
-        viewModelScope.launch {
-            postRepository.getFavouritePosts().collect { result ->
-                posts.update { it.copy(posts = result) }
-            }
-        }
+        Log.d("asd", "Fav vm init")
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        Log.d("asd", "Fav vm cleared")
     }
 
 

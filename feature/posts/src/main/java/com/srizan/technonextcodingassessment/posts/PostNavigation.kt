@@ -3,9 +3,7 @@ package com.srizan.technonextcodingassessment.posts
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import kotlinx.serialization.Serializable
 
@@ -20,11 +18,8 @@ fun NavGraphBuilder.postGraph() {
         PostScreen(
             postUiState = postUiState,
             onRefresh = viewModel::refreshPosts,
-            onFavouriteClick = viewModel::toggleFavourite
+            onFavouriteClick = viewModel::toggleFavourite,
+            onDeleteAllClick = viewModel::deleteAllPosts
         )
     }
-}
-
-fun NavController.navigateToPostScreen(navOptions: NavOptions? = null) {
-    navigate(PostNavKey, navOptions)
 }

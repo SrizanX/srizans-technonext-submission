@@ -22,8 +22,8 @@ class SignInViewModel @Inject constructor(
 ) : ViewModel() {
 
     // UI state
-    private val _uiState = MutableStateFlow(SignInUiState())
-    val uiState: StateFlow<SignInUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(UiState())
+    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     // UI events for one-time actions (e.g., navigation)
     private val _uiEvent = Channel<SignInUiEvent>(Channel.BUFFERED)
@@ -96,7 +96,7 @@ class SignInViewModel @Inject constructor(
         password.length >= 8 && password.any { it.isDigit() } && password.any { !it.isLetterOrDigit() }
 
     // UI state data class
-    data class SignInUiState(
+    data class UiState(
         val email: String = "",
         val password: String = "",
         val isLoading: Boolean = false,
