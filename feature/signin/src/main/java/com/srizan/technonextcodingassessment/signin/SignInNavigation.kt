@@ -1,7 +1,6 @@
 package com.srizan.technonextcodingassessment.signin
 
 import android.widget.Toast
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -23,22 +22,12 @@ fun NavGraphBuilder.signInGraph(
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         val context = LocalContext.current
 
-        LaunchedEffect(Unit) {
-            if (viewModel.isUserLoggedIn()) {
-                navigateToPostsScreen()
-            }
-        }
-
         HandleEvent(viewModel.uiEvent) { event ->
             when (event) {
-
                 is SignInViewModel.SignInUiEvent.SignInError -> {
                     Toast.makeText(context, event.message, Toast.LENGTH_LONG).show()
                 }
-
-                SignInViewModel.SignInUiEvent.SignInSuccess -> {
-                    navigateToPostsScreen()
-                }
+                SignInViewModel.SignInUiEvent.SignInSuccess -> navigateToPostsScreen()
             }
         }
         SignInScreen(

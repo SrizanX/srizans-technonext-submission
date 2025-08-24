@@ -1,7 +1,12 @@
 package com.srizan.technonextcodingassessment.data.repository
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.map
 import com.srizan.technonextcodingassessment.cache.dao.PostDao
 import com.srizan.technonextcodingassessment.cache.entity.PostEntity
+import com.srizan.technonextcodingassessment.data.mapper.toDomainModel
 import com.srizan.technonextcodingassessment.domain.repository.PostRepository
 import com.srizan.technonextcodingassessment.model.ApiResult
 import com.srizan.technonextcodingassessment.model.Post
@@ -11,14 +16,27 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class PostRepositoryImpl @Inject constructor(
-    private val postRemoteDatasource: PostRemoteDatasource, private val postDao: PostDao
+    private val postRemoteDatasource: PostRemoteDatasource,
+    private val postDao: PostDao,
 ) : PostRepository {
     override fun getPosts(): Flow<List<Post>> {
         return postDao.getAll().toDomainModel()
     }
 
+    override fun getAllPaginated(query: String?, pageSize: Int): Flow<PagingData<Post>> {
+        return Pager(
+            config = PagingConfig(pageSize = pageSize),
+            pagingSourceFactory = { postDao.getPostsPagingSource(query) }).flow.map { pagingData ->
+            pagingData.map { it.toDomainModel() }
+        }
+    }
+
     override fun getFavouritePosts(): Flow<List<Post>> {
         return postDao.getAllFavourites().toDomainModel()
+    }
+
+    override suspend fun getPostCount(): Int {
+        return postDao.getPostCount()
     }
 
     override suspend fun refreshPosts(): Flow<ApiResult<List<Post>>> {
@@ -49,26 +67,4 @@ class PostRepositoryImpl @Inject constructor(
     override suspend fun deleteAllPosts() {
         postDao.deleteAll()
     }
-}
-
-fun Flow<List<PostEntity>>.toDomainModel(): Flow<List<Post>> {
-    return this.map { postEntities ->
-        postEntities.toDomainModel()
-    }
-}
-
-fun List<PostEntity>.toDomainModel(): List<Post> {
-    return this.map { postEntity ->
-        postEntity.toDomainModel()
-    }
-}
-
-fun PostEntity.toDomainModel(): Post {
-    return Post(
-        id = this.id,
-        userId = this.userId,
-        title = this.title,
-        body = this.body,
-        isFavourite = this.isFavourite
-    )
 }

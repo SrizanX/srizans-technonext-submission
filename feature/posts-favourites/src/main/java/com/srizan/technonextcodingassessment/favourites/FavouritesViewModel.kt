@@ -1,6 +1,5 @@
 package com.srizan.technonextcodingassessment.favourites
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.srizan.technonextcodingassessment.domain.repository.PostRepository
@@ -20,20 +19,21 @@ class FavouritesViewModel @Inject constructor(
         viewModelScope, started = SharingStarted.Lazily, initialValue = emptyList()
     )
 
-    init {
-        Log.d("asd", "Fav vm init")
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        Log.d("asd", "Fav vm cleared")
-    }
-
-
     fun toggleFavourite(post: Post) {
         viewModelScope.launch {
             if (post.isFavourite) postRepository.unmarkPostAsFavourite(post.id)
             else postRepository.markPostAsFavourite(post.id)
+        }
+    }
+
+    fun clearAllFavourites() {
+        viewModelScope.launch {
+            val favPosts = postRepository.getFavouritePosts()
+            favPosts.collect { posts ->
+                posts.forEach { post ->
+                    postRepository.unmarkPostAsFavourite(post.id)
+                }
+            }
         }
     }
 }

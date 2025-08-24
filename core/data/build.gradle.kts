@@ -13,4 +13,5 @@ dependencies {
     implementation(projects.core.dataDatastore)
     implementation(projects.core.dataNetwork)
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.androidx.paging.common)
 }

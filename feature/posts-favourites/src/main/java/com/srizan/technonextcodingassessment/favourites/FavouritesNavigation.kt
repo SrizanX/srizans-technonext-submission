@@ -19,8 +19,7 @@ fun NavGraphBuilder.favouritesGraph() {
         FavouritesScreen(
             posts = favouritePostsUiState,
             onFavouriteClick = viewModel::toggleFavourite,
-            onClearAllClick = {},
-            onLogoutClick = {},
+            onClearAllClick = viewModel::clearAllFavourites,
             modifier = Modifier
         )
     }

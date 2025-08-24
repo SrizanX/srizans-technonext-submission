@@ -11,4 +11,10 @@ android {
 dependencies {
     implementation(projects.core.domain)
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.androidx.paging.common)
+
+    val room_version = "2.7.2"
+
+    implementation("androidx.room:room-paging:${room_version}")
+
 }

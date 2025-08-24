@@ -19,7 +19,9 @@ fun PostItem(
     post: Post, onFavouriteClick: (Post) -> Unit, modifier: Modifier = Modifier
 ) {
     ListItem(
-        headlineContent = {
+        leadingContent = {
+            Text(text = post.id.toString())
+        }, headlineContent = {
             Text(
                 text = post.title, maxLines = 2, style = MaterialTheme.typography.titleLarge
             )

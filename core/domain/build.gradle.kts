@@ -10,4 +10,5 @@ dependencies {
     api(projects.core.domainModel)
     implementation(libs.androidx.datastore.core)
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.androidx.paging.common)
 }
