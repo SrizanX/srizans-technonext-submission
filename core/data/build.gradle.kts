@@ -14,4 +14,9 @@ dependencies {
     implementation(projects.core.dataNetwork)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.androidx.paging.common)
+
+    // Testing dependencies
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.test.mockito.kotlin)
+    testImplementation(libs.test.robolectric)
 }
