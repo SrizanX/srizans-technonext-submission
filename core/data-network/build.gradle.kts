@@ -16,4 +16,8 @@ dependencies {
     implementation(libs.retrofit.converter.gson)
     implementation(libs.timber)
     implementation(libs.kotlinx.coroutines.core)
+
+    // Testing dependencies
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.test.mockito.kotlin)
 }

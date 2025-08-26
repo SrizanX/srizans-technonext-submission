@@ -105,6 +105,7 @@ okhttp = { module = "com.squareup.okhttp3:okhttp" }
 okhttp-loggingInterceptor = { module = "com.squareup.okhttp3:logging-interceptor" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
+mockwebserver = { module = "com.squareup.okhttp3:mockwebserver" }
 
 # Http - Ktor
 ktor-bom = { module = "io.ktor:ktor-bom", version.ref = "ktorBom" }

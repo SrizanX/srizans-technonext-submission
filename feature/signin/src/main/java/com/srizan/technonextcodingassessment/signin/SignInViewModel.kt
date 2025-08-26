@@ -1,10 +1,10 @@
 package com.srizan.technonextcodingassessment.signin
 
-import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.srizan.technonextcodingassessment.domain.repository.AuthenticationRepository
 import com.srizan.technonextcodingassessment.domain.repository.PreferenceRepository
+import com.srizan.technonextcodingassessment.domain.validation.ValidationRules
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,8 +35,8 @@ class SignInViewModel @Inject constructor(
                 isLoading = true, errorMessage = null
             )
 
-            // Validate input
-            if (!isValidEmail(uiState.value.email)) {
+            // Validate input using centralized validation rules
+            if (!ValidationRules.isValidEmail(uiState.value.email)) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false, errorMessage = "Invalid email format"
                 )
@@ -66,25 +66,44 @@ class SignInViewModel @Inject constructor(
     }
 
 
-    // Update email or password in state
+    // Update email with real-time validation
     fun updateEmail(email: String) {
-        _uiState.value = _uiState.value.copy(email = email, errorMessage = null)
+        val emailError = if (email.isNotEmpty() && !ValidationRules.isValidEmail(email)) {
+            "Invalid email format"
+        } else null
+
+        _uiState.value = _uiState.value.copy(
+            email = email,
+            emailError = emailError,
+            errorMessage = null,
+            isFormValid = validateForm(email, _uiState.value.password)
+        )
     }
 
+    // Update password with minimal validation (only check if empty when submitting)
     fun updatePassword(password: String) {
-        _uiState.value = _uiState.value.copy(password = password, errorMessage = null)
+        _uiState.value = _uiState.value.copy(
+            password = password,
+            passwordError = null, // No real-time password validation for sign-in
+            errorMessage = null,
+            isFormValid = validateForm(_uiState.value.email, password)
+        )
     }
 
-    // Validation helpers
-    private fun isValidEmail(email: String): Boolean =
-        Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    // Form validation - only validate email format and non-empty fields
+    private fun validateForm(email: String, password: String): Boolean {
+        return ValidationRules.isValidEmail(email) && email.isNotEmpty() && password.isNotEmpty() // Only check not empty, no complexity requirements
+    }
 
     // UI state data class
     data class UiState(
         val email: String = "",
         val password: String = "",
         val isLoading: Boolean = false,
-        val errorMessage: String? = null
+        val errorMessage: String? = null,
+        val emailError: String? = null,
+        val passwordError: String? = null,
+        val isFormValid: Boolean = false
     )
 
     // UI event sealed class

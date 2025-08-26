@@ -2,7 +2,6 @@ package com.srizan.technonextcodingassessment.signin
 
 
 import android.content.res.Configuration
-import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,7 +21,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
@@ -128,29 +127,12 @@ internal fun SignInScreen(
                 )
             }
 
-            var emailError by remember { mutableStateOf<String?>(null) }
-            var passwordError by remember { mutableStateOf<String?>(null) }
             var isPasswordVisible by remember { mutableStateOf(false) }
-
-            val isEmailValid = uiState.email.isNotEmpty() &&
-                    Patterns.EMAIL_ADDRESS.matcher(uiState.email).matches()
-            val isPasswordValid = uiState.password.length >= 5
-            val isFormValid =
-                isEmailValid && isPasswordValid && emailError == null && passwordError == null
 
             // Email Field
             OutlinedTextField(
                 value = uiState.email,
-                onValueChange = {
-                    onEmailInputChange(it)
-                    emailError = when {
-                        it.isEmpty() -> "Email is required"
-                        !Patterns.EMAIL_ADDRESS.matcher(it)
-                            .matches() -> "Invalid email format"
-
-                        else -> null
-                    }
-                },
+                onValueChange = onEmailInputChange,
                 label = { Text("Email Address") },
                 placeholder = { Text("Enter your email") },
                 leadingIcon = {
@@ -160,54 +142,42 @@ internal fun SignInScreen(
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 },
-                isError = emailError != null,
-                supportingText = {
-                    emailError?.let {
+                isError = uiState.emailError != null,
+                supportingText = uiState.emailError?.let {
+                    {
                         Text(
-                            text = it,
-                            color = MaterialTheme.colorScheme.error
+                            text = it, color = MaterialTheme.colorScheme.error
                         )
                     }
                 },
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Email,
-                    imeAction = ImeAction.Next
+                    keyboardType = KeyboardType.Email, imeAction = ImeAction.Next
                 ),
                 keyboardActions = KeyboardActions(
-                    onNext = { focusManager.moveFocus(FocusDirection.Down) }
-                ),
+                    onNext = { focusManager.moveFocus(FocusDirection.Down) }),
                 singleLine = true,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .semantics { contentDescription = "Email input field" }
-            )
+                    .semantics { contentDescription = "Email input field" })
 
             Spacer(modifier = Modifier.height(12.dp))
 
             // Password Field
             OutlinedTextField(
                 value = uiState.password,
-                onValueChange = {
-                    onPasswordInputChange(it)
-                    passwordError = when {
-                        it.isEmpty() -> "Password is required"
-                        it.length < 5 -> "Password must be at least 5 characters"
-                        else -> null
-                    }
-                },
+                onValueChange = onPasswordInputChange,
                 label = { Text("Password") },
                 placeholder = { Text("Enter your password") },
                 leadingIcon = {
                     Icon(
-                        Icons.Default.Lock,
+                        Icons.Default.Key,
                         contentDescription = "Password icon",
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 },
                 trailingIcon = {
                     IconButton(
-                        onClick = { isPasswordVisible = !isPasswordVisible }
-                    ) {
+                        onClick = { isPasswordVisible = !isPasswordVisible }) {
                         Icon(
                             imageVector = if (isPasswordVisible) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
                             contentDescription = if (isPasswordVisible) "Hide password" else "Show password",
@@ -215,49 +185,33 @@ internal fun SignInScreen(
                         )
                     }
                 },
-                isError = passwordError != null,
-                supportingText = {
-                    passwordError?.let {
-                        Text(
-                            text = it,
-                            color = MaterialTheme.colorScheme.error
-                        )
-                    }
-                },
+                isError = false, // No password validation errors for sign-in
                 visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Done
+                    keyboardType = KeyboardType.Password, imeAction = ImeAction.Done
                 ),
                 keyboardActions = KeyboardActions(
                     onDone = {
-                        if (isFormValid) {
+                        if (uiState.isFormValid) {
                             onSignInClick()
                         }
                         focusManager.clearFocus()
-                    }
-                ),
+                    }),
                 singleLine = true,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .semantics { contentDescription = "Password input field" }
-            )
+                    .semantics { contentDescription = "Password input field" })
 
             Spacer(modifier = Modifier.height(32.dp))
 
             // Sign In Button
             Button(
-                onClick = {
-                    if (isFormValid) {
-                        onSignInClick()
-                    }
-                },
-                enabled = isFormValid && !uiState.isLoading,
+                onClick = onSignInClick,
+                enabled = uiState.isFormValid && !uiState.isLoading,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
-                    .semantics { contentDescription = "Sign in button" }
-            ) {
+                    .semantics { contentDescription = "Sign in button" }) {
                 if (uiState.isLoading) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(20.dp),
@@ -281,20 +235,17 @@ internal fun SignInScreen(
             Row(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.semantics { contentDescription = "Sign up section" }
-            ) {
+                modifier = Modifier.semantics { contentDescription = "Sign up section" }) {
                 Text(
                     "Don't have an account? ",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 TextButton(
-                    onClick = onSignUpClick,
-                    enabled = !uiState.isLoading
+                    onClick = onSignUpClick, enabled = !uiState.isLoading
                 ) {
                     Text(
-                        "Sign Up",
-                        fontWeight = FontWeight.Medium
+                        "Sign Up", fontWeight = FontWeight.Medium
                     )
                 }
             }
@@ -306,8 +257,7 @@ internal fun SignInScreen(
                     text = error,
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.semantics { contentDescription = "Error message: $error" }
-                )
+                    modifier = Modifier.semantics { contentDescription = "Error message: $error" })
             }
         }
     }
@@ -354,6 +304,43 @@ private fun SignInErrorPreview() {
         Surface {
             SignInScreen(
                 uiState = SignInViewModel.UiState(errorMessage = "Invalid credentials. Please try again."),
+                onEmailInputChange = {},
+                onPasswordInputChange = {},
+                onSignInClick = { },
+                onSignUpClick = {},
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, name = "Validation Errors")
+@Composable
+private fun SignInValidationErrorsPreview() {
+    AppTheme {
+        Surface {
+            SignInScreen(
+                uiState = SignInViewModel.UiState(
+                    email = "invalid-email", password = "", // Empty password
+                    emailError = "Invalid email format", isFormValid = false
+                ),
+                onEmailInputChange = {},
+                onPasswordInputChange = {},
+                onSignInClick = { },
+                onSignUpClick = {},
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, name = "Form Valid")
+@Composable
+private fun SignInFormValidPreview() {
+    AppTheme {
+        Surface {
+            SignInScreen(
+                uiState = SignInViewModel.UiState(
+                    email = "user@example.com", password = "password123", isFormValid = true
+                ),
                 onEmailInputChange = {},
                 onPasswordInputChange = {},
                 onSignInClick = { },

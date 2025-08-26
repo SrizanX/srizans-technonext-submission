@@ -3,6 +3,7 @@ package com.srizan.technonextcodingassessment.data.repository
 import com.srizan.technonextcodingassessment.cache.dao.UserDao
 import com.srizan.technonextcodingassessment.cache.entity.UserEntity
 import com.srizan.technonextcodingassessment.domain.repository.AuthenticationRepository
+import com.srizan.technonextcodingassessment.domain.validation.ValidationRules
 import kotlinx.coroutines.delay
 import javax.inject.Inject
 
@@ -10,9 +11,19 @@ class AuthenticationRepositoryImpl @Inject constructor(
     private val userDao: UserDao
 ) : AuthenticationRepository {
     override suspend fun signUp(email: String, password: String): Result<Unit> {
-        if (!isValidEmail(email)) return Result.failure(Exception("Invalid email"))
-        //if (!isStrongPassword(password)) return Result.failure(Exception("Weak password"))
-        if (userDao.doesUserExist(email)) return Result.failure(Exception("Email already registered"))
+        // Server-side validation - Critical security checks that cannot be bypassed
+        if (!ValidationRules.isValidEmail(email)) {
+            return Result.failure(Exception("Invalid email format"))
+        }
+        
+        if (!ValidationRules.isStrongPassword(password)) {
+            return Result.failure(Exception("Password must be at least 8 characters with uppercase, lowercase, number and special character"))
+        }
+        
+        // Business rule validation
+        if (userDao.doesUserExist(email)) {
+            return Result.failure(Exception("Email already registered"))
+        }
 
         val user = UserEntity(email = email, password = password)
         return try {
@@ -25,8 +36,15 @@ class AuthenticationRepositoryImpl @Inject constructor(
 
     override suspend fun signIn(email: String, password: String): Result<Unit> {
         delay(3000) // Simulate network delay
-        val user =
-            userDao.getUserByEmail(email) ?: return Result.failure(Exception("Invalid credentials"))
+        
+        // Basic validation
+        if (!ValidationRules.isValidEmail(email)) {
+            return Result.failure(Exception("Invalid email format"))
+        }
+        
+        val user = userDao.getUserByEmail(email) 
+            ?: return Result.failure(Exception("Invalid credentials"))
+            
         return if (password == user.password) {
             Result.success(Unit)
         } else {
@@ -43,10 +61,4 @@ class AuthenticationRepositoryImpl @Inject constructor(
             Result.failure(Exception("Deletion failed: ${e.message}"))
         }
     }
-
-    private fun isValidEmail(email: String): Boolean =
-        android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
-
-    private fun isStrongPassword(password: String): Boolean =
-        password.length >= 8 && password.any { it.isDigit() } && password.any { !it.isLetterOrDigit() }
 }

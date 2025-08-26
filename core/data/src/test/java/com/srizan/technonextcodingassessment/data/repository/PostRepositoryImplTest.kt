@@ -2,7 +2,6 @@ package com.srizan.technonextcodingassessment.data.repository
 
 import com.srizan.technonextcodingassessment.cache.dao.PostDao
 import com.srizan.technonextcodingassessment.cache.entity.PostEntity
-import com.srizan.technonextcodingassessment.data.mapper.toDomainModel
 import com.srizan.technonextcodingassessment.model.ApiResult
 import com.srizan.technonextcodingassessment.model.Post
 import com.srizan.technonextcodingassessment.network.PostRemoteDatasource
@@ -10,9 +9,13 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
-import org.junit.Assert.*
-import org.mockito.kotlin.*
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 /**
  * Tests for PostRepositoryImpl - The actual repository implementation

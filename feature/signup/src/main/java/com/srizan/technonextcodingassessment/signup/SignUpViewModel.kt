@@ -1,9 +1,10 @@
 package com.srizan.technonextcodingassessment.signup
 
-import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.srizan.technonextcodingassessment.domain.repository.AuthenticationRepository
+import com.srizan.technonextcodingassessment.domain.validation.PasswordStrength
+import com.srizan.technonextcodingassessment.domain.validation.ValidationRules
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,39 +31,29 @@ class SignUpViewModel @Inject constructor(
         viewModelScope.launch {
             // Update state to show loading
             _uiState.value = _uiState.value.copy(
-                email = email,
-                password = password,
-                confirmPassword = confirmPassword,
-                isLoading = true,
-                errorMessage = null
+                isLoading = true, errorMessage = null
             )
 
-            // Validate input
-            if (!isValidEmail(email)) {
+            // Validate input (UI layer validation for user feedback)
+            if (!ValidationRules.isValidEmail(email)) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false, errorMessage = "Invalid email format"
                 )
                 return@launch
             }
-            if (password.isEmpty()) {
+            if (!ValidationRules.isStrongPassword(password)) {
                 _uiState.value = _uiState.value.copy(
-                    isLoading = false, errorMessage = "Password cannot be empty"
+                    isLoading = false,
+                    errorMessage = "Password must be at least 8 characters with uppercase, lowercase, number and special character"
                 )
                 return@launch
             }
-            if (password != confirmPassword) {
+            if (!ValidationRules.doPasswordsMatch(password, confirmPassword)) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false, errorMessage = "Passwords do not match"
                 )
                 return@launch
             }
-//            if (!isStrongPassword(password)) {
-//                _uiState.value = _uiState.value.copy(
-//                    isLoading = false,
-//                    errorMessage = "Password must be at least 8 characters, include a number and a special character"
-//                )
-//                return@launch
-//            }
 
             // Perform registration
             authenticationRepository.signUp(email, password).fold(onSuccess = {
@@ -76,25 +67,63 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    // Update input fields
+    // Update input fields with real-time validation
     fun updateEmail(email: String) {
-        _uiState.value = _uiState.value.copy(email = email, errorMessage = null)
+        val emailError = if (email.isNotEmpty() && !ValidationRules.isValidEmail(email)) {
+            "Invalid email format"
+        } else null
+
+        _uiState.value = _uiState.value.copy(
+            email = email, emailError = emailError, errorMessage = null, isFormValid = validateForm(
+                email, _uiState.value.password, _uiState.value.confirmPassword
+            )
+        )
     }
 
     fun updatePassword(password: String) {
-        _uiState.value = _uiState.value.copy(password = password, errorMessage = null)
+        val passwordError =
+            if (password.isNotEmpty() && !ValidationRules.isStrongPassword(password)) {
+                "Password must be at least 8 characters with uppercase, lowercase, number and special character"
+            } else null
+
+        val passwordStrength = ValidationRules.calculatePasswordStrength(password)
+
+        _uiState.value = _uiState.value.copy(
+            password = password,
+            passwordError = passwordError,
+            passwordStrength = passwordStrength,
+            errorMessage = null,
+            isFormValid = validateForm(
+                _uiState.value.email, password, _uiState.value.confirmPassword
+            )
+        )
     }
 
     fun updateConfirmPassword(confirmPassword: String) {
-        _uiState.value = _uiState.value.copy(confirmPassword = confirmPassword, errorMessage = null)
+        val confirmPasswordError =
+            if (confirmPassword.isNotEmpty() && !ValidationRules.doPasswordsMatch(
+                    _uiState.value.password, confirmPassword
+                )
+            ) {
+                "Passwords do not match"
+            } else null
+
+        _uiState.value = _uiState.value.copy(
+            confirmPassword = confirmPassword,
+            confirmPasswordError = confirmPasswordError,
+            errorMessage = null,
+            isFormValid = validateForm(
+                _uiState.value.email, _uiState.value.password, confirmPassword
+            )
+        )
     }
 
-    // Validation helpers
-    private fun isValidEmail(email: String): Boolean =
-        Patterns.EMAIL_ADDRESS.matcher(email).matches()
-
-    private fun isStrongPassword(password: String): Boolean =
-        password.length >= 8 && password.any { it.isDigit() } && password.any { !it.isLetterOrDigit() }
+    private fun validateForm(email: String, password: String, confirmPassword: String): Boolean {
+        return ValidationRules.isValidEmail(email) && ValidationRules.isStrongPassword(password) && ValidationRules.doPasswordsMatch(
+            password,
+            confirmPassword
+        ) && email.isNotEmpty() && password.isNotEmpty() && confirmPassword.isNotEmpty()
+    }
 
     // UI state data class
     data class UiState(
@@ -102,7 +131,12 @@ class SignUpViewModel @Inject constructor(
         val password: String = "",
         val confirmPassword: String = "",
         val isLoading: Boolean = false,
-        val errorMessage: String? = null
+        val errorMessage: String? = null,
+        val emailError: String? = null,
+        val passwordError: String? = null,
+        val confirmPasswordError: String? = null,
+        val isFormValid: Boolean = false,
+        val passwordStrength: PasswordStrength = PasswordStrength.WEAK
     )
 
     // UI event sealed class
