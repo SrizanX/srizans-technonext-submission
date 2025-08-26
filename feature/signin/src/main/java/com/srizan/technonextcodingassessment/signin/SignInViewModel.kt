@@ -10,7 +10,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,52 +28,40 @@ class SignInViewModel @Inject constructor(
     private val _uiEvent = Channel<SignInUiEvent>(Channel.BUFFERED)
     val uiEvent = _uiEvent.receiveAsFlow()
 
-    suspend fun isUserLoggedIn(): Boolean {
-        return preferenceRepository.isUserLoggedIn().first() == true
-    }
-
-    fun signIn(email: String, password: String) {
+    fun signIn() {
         viewModelScope.launch {
             // Update state to show loading
             _uiState.value = _uiState.value.copy(
-                email = email,
-                password = password,
-                isLoading = true,
-                errorMessage = null
+                isLoading = true, errorMessage = null
             )
 
             // Validate input
-            if (!isValidEmail(email)) {
+            if (!isValidEmail(uiState.value.email)) {
                 _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    errorMessage = "Invalid email format"
+                    isLoading = false, errorMessage = "Invalid email format"
                 )
                 return@launch
             }
-            if (password.isEmpty()) {
+            if (uiState.value.password.isEmpty()) {
                 _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    errorMessage = "Password cannot be empty"
+                    isLoading = false, errorMessage = "Password cannot be empty"
                 )
                 return@launch
             }
 
             // Perform sign-in
-            authenticationRepository.signIn(email, password).fold(
-                onSuccess = {
+            authenticationRepository.signIn(uiState.value.email, uiState.value.password)
+                .fold(onSuccess = {
                     _uiState.value = _uiState.value.copy(isLoading = false)
                     preferenceRepository.setUserLoggedInStatus(true)
-                    preferenceRepository.setUserEmail(email)
+                    preferenceRepository.setUserEmail(uiState.value.email)
                     _uiEvent.send(SignInUiEvent.SignInSuccess)
-                },
-                onFailure = { exception ->
+                }, onFailure = { exception ->
                     _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        errorMessage = exception.message ?: "Login failed"
+                        isLoading = false, errorMessage = exception.message ?: "Login failed"
                     )
                     _uiEvent.send(SignInUiEvent.SignInError(exception.message ?: "Login failed"))
-                }
-            )
+                })
         }
     }
 
@@ -91,9 +78,6 @@ class SignInViewModel @Inject constructor(
     // Validation helpers
     private fun isValidEmail(email: String): Boolean =
         Patterns.EMAIL_ADDRESS.matcher(email).matches()
-
-    private fun isStrongPassword(password: String): Boolean =
-        password.length >= 8 && password.any { it.isDigit() } && password.any { !it.isLetterOrDigit() }
 
     // UI state data class
     data class UiState(

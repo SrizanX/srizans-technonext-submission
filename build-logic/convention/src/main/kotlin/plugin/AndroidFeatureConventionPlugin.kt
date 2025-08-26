@@ -19,6 +19,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
                 add("implementation", libs.findLibrary("compose-ui").get())
                 add("implementation", libs.findLibrary("compose-ui-graphics").get())
                 add("implementation", libs.findLibrary("compose-material3").get())
+                add("implementation", libs.findLibrary("compose-material-icons-extended").get())
             }
         }
     }

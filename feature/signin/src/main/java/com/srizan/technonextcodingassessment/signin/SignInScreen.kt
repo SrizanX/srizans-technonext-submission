@@ -2,19 +2,34 @@ package com.srizan.technonextcodingassessment.signin
 
 
 import android.content.res.Configuration
+import android.util.Patterns
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -23,122 +38,325 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.srizan.technonextcodingassessment.designsystem.theme.AppTheme
+import com.srizan.technonextcodingassessment.ui.HandleEvent
+
 
 @Composable
-fun SignInScreen(
+internal fun SignInScreen(
+    viewModel: SignInViewModel = hiltViewModel(),
+    navigateToSignUpScreen: () -> Unit,
+    navigateToPostsScreen: () -> Unit,
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    HandleEvent(viewModel.uiEvent) { event ->
+        when (event) {
+            is SignInViewModel.SignInUiEvent.SignInError -> {
+                Toast.makeText(context, event.message, Toast.LENGTH_LONG).show()
+            }
+
+            SignInViewModel.SignInUiEvent.SignInSuccess -> navigateToPostsScreen()
+        }
+    }
+    SignInScreen(
+        uiState = uiState,
+        onEmailInputChange = viewModel::updateEmail,
+        onPasswordInputChange = viewModel::updatePassword,
+        onSignInClick = viewModel::signIn,
+        onSignUpClick = navigateToSignUpScreen,
+    )
+}
+
+@Composable
+internal fun SignInScreen(
     uiState: SignInViewModel.UiState,
-    onSignInClick: (String, String) -> Unit,
+    onEmailInputChange: (String) -> Unit,
+    onPasswordInputChange: (String) -> Unit,
+    onSignInClick: () -> Unit,
     onSignUpClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
+    val focusManager = LocalFocusManager.current
+
+    Box(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp, alignment = Alignment.CenterVertically)
+            .imePadding()
     ) {
-        Text(
-            text = "Sign In",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        var email by rememberSaveable(stateSaver = TextFieldValue.Saver) {
-            mutableStateOf(TextFieldValue("a@b.com"))
-        }
-        var password by rememberSaveable(stateSaver = TextFieldValue.Saver) {
-            mutableStateOf(TextFieldValue("12345"))
-        }
-        var emailError by remember { mutableStateOf<String?>(null) }
-        var passwordError by remember { mutableStateOf<String?>(null) }
-
-        val isEmailValid =
-            email.text.isNotEmpty() && email.text.contains("@") && email.text.contains(".")
-        val isPasswordValid = password.text.length >= 5
-
-        OutlinedTextField(
-            value = email,
-            onValueChange = {
-                email = it
-                emailError = when {
-                    it.text.isEmpty() -> "Email is required"
-                    !it.text.contains("@") || !it.text.contains(".") -> "Invalid email format"
-                    else -> null
-                }
-            },
-            label = { Text("Email") },
-            isError = emailError != null,
-            supportingText = { emailError?.let { Text(it) } },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        OutlinedTextField(
-            value = password,
-            onValueChange = {
-                password = it
-                passwordError = when {
-                    it.text.isEmpty() -> "Password is required"
-                    it.text.length < 6 -> "Password must be at least 6 characters"
-                    else -> null
-                }
-            },
-            label = { Text("Password") },
-            isError = passwordError != null,
-            supportingText = { passwordError?.let { Text(it) } },
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        OutlinedButton(
-            onClick = {
-                if (isEmailValid && isPasswordValid) {
-                    onSignInClick(email.text, password.text)
-                }
-            }, enabled = isEmailValid && isPasswordValid, modifier = Modifier.fillMaxWidth()
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            if (uiState.isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(24.dp)
+            // Header Section
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(bottom = 32.dp)
+            ) {
+                Text(
+                    text = "Welcome Back",
+                    style = MaterialTheme.typography.headlineLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
                 )
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Sign in to your account",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
-            Text("Sign In")
-        }
 
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text("Don't have an account? ")
-            TextButton(onClick = onSignUpClick) {
-                Text("Sign Up")
+            var emailError by remember { mutableStateOf<String?>(null) }
+            var passwordError by remember { mutableStateOf<String?>(null) }
+            var isPasswordVisible by remember { mutableStateOf(false) }
+
+            val isEmailValid = uiState.email.isNotEmpty() &&
+                    Patterns.EMAIL_ADDRESS.matcher(uiState.email).matches()
+            val isPasswordValid = uiState.password.length >= 5
+            val isFormValid =
+                isEmailValid && isPasswordValid && emailError == null && passwordError == null
+
+            // Email Field
+            OutlinedTextField(
+                value = uiState.email,
+                onValueChange = {
+                    onEmailInputChange(it)
+                    emailError = when {
+                        it.isEmpty() -> "Email is required"
+                        !Patterns.EMAIL_ADDRESS.matcher(it)
+                            .matches() -> "Invalid email format"
+
+                        else -> null
+                    }
+                },
+                label = { Text("Email Address") },
+                placeholder = { Text("Enter your email") },
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.Email,
+                        contentDescription = "Email icon",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                },
+                isError = emailError != null,
+                supportingText = {
+                    emailError?.let {
+                        Text(
+                            text = it,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(
+                    onNext = { focusManager.moveFocus(FocusDirection.Down) }
+                ),
+                singleLine = true,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .semantics { contentDescription = "Email input field" }
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Password Field
+            OutlinedTextField(
+                value = uiState.password,
+                onValueChange = {
+                    onPasswordInputChange(it)
+                    passwordError = when {
+                        it.isEmpty() -> "Password is required"
+                        it.length < 5 -> "Password must be at least 5 characters"
+                        else -> null
+                    }
+                },
+                label = { Text("Password") },
+                placeholder = { Text("Enter your password") },
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.Lock,
+                        contentDescription = "Password icon",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                },
+                trailingIcon = {
+                    IconButton(
+                        onClick = { isPasswordVisible = !isPasswordVisible }
+                    ) {
+                        Icon(
+                            imageVector = if (isPasswordVisible) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                            contentDescription = if (isPasswordVisible) "Hide password" else "Show password",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                },
+                isError = passwordError != null,
+                supportingText = {
+                    passwordError?.let {
+                        Text(
+                            text = it,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                },
+                visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        if (isFormValid) {
+                            onSignInClick()
+                        }
+                        focusManager.clearFocus()
+                    }
+                ),
+                singleLine = true,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .semantics { contentDescription = "Password input field" }
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Sign In Button
+            Button(
+                onClick = {
+                    if (isFormValid) {
+                        onSignInClick()
+                    }
+                },
+                enabled = isFormValid && !uiState.isLoading,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .semantics { contentDescription = "Sign in button" }
+            ) {
+                if (uiState.isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        strokeWidth = 2.dp
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Signing In...")
+                } else {
+                    Text(
+                        "Sign In",
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Sign Up Section
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.semantics { contentDescription = "Sign up section" }
+            ) {
+                Text(
+                    "Don't have an account? ",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                TextButton(
+                    onClick = onSignUpClick,
+                    enabled = !uiState.isLoading
+                ) {
+                    Text(
+                        "Sign Up",
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+
+            // Error Message Display
+            uiState.errorMessage?.let { error ->
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = error,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.semantics { contentDescription = "Error message: $error" }
+                )
             }
         }
     }
 }
 
-@Preview(showBackground = true)
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(showBackground = true, name = "Light Mode")
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@Preview(showBackground = true, device = "spec:width=360dp,height=640dp", name = "Small Screen")
 @Composable
 private fun SignInPreview() {
     AppTheme {
         Surface {
             SignInScreen(
                 uiState = SignInViewModel.UiState(),
-                onSignInClick = { _, _ -> },
+                onEmailInputChange = {},
+                onPasswordInputChange = {},
+                onSignInClick = { },
+                onSignUpClick = {},
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, name = "Loading State")
+@Composable
+private fun SignInLoadingPreview() {
+    AppTheme {
+        Surface {
+            SignInScreen(
+                uiState = SignInViewModel.UiState(isLoading = true),
+                onEmailInputChange = {},
+                onPasswordInputChange = {},
+                onSignInClick = { },
+                onSignUpClick = {},
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, name = "Error State")
+@Composable
+private fun SignInErrorPreview() {
+    AppTheme {
+        Surface {
+            SignInScreen(
+                uiState = SignInViewModel.UiState(errorMessage = "Invalid credentials. Please try again."),
+                onEmailInputChange = {},
+                onPasswordInputChange = {},
+                onSignInClick = { },
                 onSignUpClick = {},
             )
         }
