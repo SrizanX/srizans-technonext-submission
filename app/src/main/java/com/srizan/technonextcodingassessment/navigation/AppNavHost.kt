@@ -9,6 +9,7 @@ import androidx.navigation.navOptions
 import com.srizan.technonextcodingassessment.favourites.favouritesGraph
 import com.srizan.technonextcodingassessment.posts.PostNavKey
 import com.srizan.technonextcodingassessment.posts.postGraph
+import com.srizan.technonextcodingassessment.profile.profileGraph
 import com.srizan.technonextcodingassessment.signin.signInGraph
 import com.srizan.technonextcodingassessment.signup.navigateToSignUpScreen
 import com.srizan.technonextcodingassessment.signup.signUpGraph
@@ -30,6 +31,7 @@ fun AppNavHost(
         }, popBack = { navController.popBackStack() })
         postGraph()
         favouritesGraph()
+        profileGraph()
     }
 }
 

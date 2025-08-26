@@ -23,6 +23,7 @@ dependencies {
         implementation(signup)
         implementation(posts)
         implementation(postsFavourites)
+        implementation(profile)
     }
 
     implementation(libs.androidx.core.splashscreen)

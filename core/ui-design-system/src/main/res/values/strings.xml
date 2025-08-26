@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Srizan\'s TechnoNext Submission</string>
+
+    <string name="app_theme_preference">Dark mode preference</string>
+    <string name="app_theme_mode_config_light">Light</string>
+    <string name="app_theme_mode_config_dark">Dark</string>
+    <string name="app_theme_mode_config_system_default">System default</string>
 </resources>

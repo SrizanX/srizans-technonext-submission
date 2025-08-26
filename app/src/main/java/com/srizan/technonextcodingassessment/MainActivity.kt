@@ -19,7 +19,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             App(
-                preferenceRepository::isUserLoggedIn
+                preferenceRepository::isUserLoggedIn,
+                preferenceRepository::getAppThemeConfig
             )
         }
     }
