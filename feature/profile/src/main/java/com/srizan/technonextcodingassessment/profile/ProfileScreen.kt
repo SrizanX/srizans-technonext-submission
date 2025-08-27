@@ -1,5 +1,6 @@
 package com.srizan.technonextcodingassessment.profile
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,6 +25,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
@@ -50,12 +53,13 @@ internal fun ProfileScreen(
     modifier: Modifier = Modifier
 ) {
     val viewModel: ProfileViewModel = hiltViewModel()
-    val themeConfig by viewModel.appThemeConfig.collectAsStateWithLifecycle()
-    
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
     ProfileScreen(
-        themeConfig = themeConfig,
+        uiState = uiState,
         onChangeDarkThemeConfig = viewModel::changeAppThemeConfig,
         onSignOut = viewModel::signOut,
+        onClearError = viewModel::clearError,
         modifier = modifier
     )
 }
@@ -66,13 +70,22 @@ internal fun ProfileScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    themeConfig: AppThemeConfig,
+    uiState: ProfileViewModel.UiState,
     onChangeDarkThemeConfig: (AppThemeConfig) -> Unit,
     onSignOut: () -> Unit,
+    onClearError: () -> Unit,
     modifier: Modifier = Modifier,
-    email: String = "user@example.com", // Inject or pass from ViewModel
 ) {
     var showSignOutConfirmationDialog by remember { mutableStateOf(false) }
+
+    // Show error message if present
+    uiState.errorMessage?.let { error ->
+        LaunchedEffect(error) {
+            // Could show a snackbar or toast here
+            // For now, we'll just log the error
+            println("Profile Error: $error")
+        }
+    }
 
     Column(
         modifier = modifier
@@ -86,50 +99,70 @@ fun ProfileScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .weight(1f), horizontalAlignment = Alignment.Start
         ) {
             Image(
                 imageVector = Icons.Default.AccountCircle,
                 contentDescription = "Avatar",
                 modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
                     .size(96.dp)
-                    .clip(CircleShape)
+                    .clip(CircleShape),
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+
             )
 
             Spacer(Modifier.height(12.dp))
 
+
             Text(
-                text = email, style = MaterialTheme.typography.titleMedium
+                text = stringResource(R.string.profile_email_label),
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
+            )
+
+            Text(
+                text = uiState.email.ifEmpty { "user@example.com" },
+                style = MaterialTheme.typography.titleMedium
             )
 
 
-
-
-            SettingsDialogSectionTitle(text = stringResource(R.string.app_theme_preference))
+            Text(
+                text = stringResource(R.string.app_theme_preference),
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier
+                    .padding(top = 16.dp, bottom = 8.dp)
+                    .align(Alignment.Start),
+            )
             Column(Modifier.selectableGroup()) {
                 SettingsDialogThemeChooserRow(
                     text = stringResource(R.string.app_theme_mode_config_system_default),
-                    selected = themeConfig == AppThemeConfig.SYSTEM,
+                    selected = uiState.appThemeConfig == AppThemeConfig.SYSTEM,
                     onClick = { onChangeDarkThemeConfig(AppThemeConfig.SYSTEM) },
                 )
                 SettingsDialogThemeChooserRow(
                     text = stringResource(R.string.app_theme_mode_config_light),
-                    selected = themeConfig == AppThemeConfig.LIGHT,
+                    selected = uiState.appThemeConfig == AppThemeConfig.LIGHT,
                     onClick = { onChangeDarkThemeConfig(AppThemeConfig.LIGHT) },
                 )
                 SettingsDialogThemeChooserRow(
                     text = stringResource(R.string.app_theme_mode_config_dark),
-                    selected = themeConfig == AppThemeConfig.DARK,
+                    selected = uiState.appThemeConfig == AppThemeConfig.DARK,
                     onClick = { onChangeDarkThemeConfig(AppThemeConfig.DARK) },
                 )
             }
         }
 
         OutlinedButton(
-            onClick = { showSignOutConfirmationDialog = true }, modifier = Modifier.fillMaxWidth()
+            onClick = { showSignOutConfirmationDialog = true },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !uiState.isSigningOut
         ) {
-            Text(text = "Sign Out")
+            if (uiState.isSigningOut) {
+                Text(text = "Signing Out...")
+            } else {
+                Text(text = "Sign Out")
+            }
         }
     }
 
@@ -152,16 +185,6 @@ fun ProfileScreen(
 fun ProfileAppBar(modifier: Modifier = Modifier) {
     TopAppBar(
         title = { Text("Profile") }, modifier = modifier
-    )
-}
-
-
-@Composable
-private fun SettingsDialogSectionTitle(text: String) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.titleMedium,
-        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
     )
 }
 
@@ -192,15 +215,19 @@ fun SettingsDialogThemeChooserRow(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 private fun ProfileScreenPreview() {
     AppTheme {
         Surface {
             ProfileScreen(
-                themeConfig = AppThemeConfig.SYSTEM,
+                uiState = ProfileViewModel.UiState(
+                    email = "test@example.com", appThemeConfig = AppThemeConfig.SYSTEM
+                ),
                 onChangeDarkThemeConfig = {},
                 onSignOut = {},
+                onClearError = {},
             )
         }
     }

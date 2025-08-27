@@ -120,7 +120,7 @@ class AuthenticationRepositoryImplTest {
 
         // Then
         assertTrue("Sign in should fail", result.isFailure)
-        assertEquals("Invalid credentials", result.exceptionOrNull()?.message)
+        assertEquals("User doesn't exist", result.exceptionOrNull()?.message)
         verify(mockUserDao).getUserByEmail(email)
     }
 

@@ -8,7 +8,6 @@ android {
 }
 
 dependencies {
-    implementation(projects.common)
     implementation(libs.androidx.paging.runtime)
     implementation(libs.androidx.paging.compose)
 

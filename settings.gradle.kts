@@ -23,7 +23,6 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 rootProject.name = "SrizansTechnoNextSubmission"
 include(":app")
-include(":common")
 // Core modules
 include(":core:data")
 include(":core:data-cache")

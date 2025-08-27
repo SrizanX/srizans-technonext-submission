@@ -8,5 +8,11 @@ android {
 }
 
 dependencies {
-    implementation(projects.common)
+    // Testing dependencies
+    testImplementation(libs.test.junit4)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.test.mockito.core)
+    testImplementation(libs.test.mockito.kotlin)
+    testImplementation(libs.test.arch.core.testing)
+    testImplementation(libs.test.robolectric)
 }

@@ -1,5 +1,6 @@
 package com.srizan.technonextcodingassessment.favourites
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -120,7 +121,8 @@ fun FavouritesAppBar(
 }
 
 
-@Preview(device = "spec:width=411dp,height=891dp")
+@Preview(showBackground = true, name = "Light Mode")
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 private fun FavouritesScreenPreview() {
     AppTheme {

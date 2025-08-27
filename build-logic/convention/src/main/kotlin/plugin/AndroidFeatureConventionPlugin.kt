@@ -13,7 +13,6 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
                 apply("convention.android.navigation.compose")
             }
             dependencies {
-                add("implementation", project(":common"))
                 add("implementation", project(":core:domain"))
                 add("implementation", project(":core:ui"))
                 add("implementation", libs.findLibrary("compose-ui").get())

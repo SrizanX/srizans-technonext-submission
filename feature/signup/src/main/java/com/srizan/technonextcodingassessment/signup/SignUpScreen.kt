@@ -17,8 +17,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Visibility
@@ -40,7 +38,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -57,6 +54,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.srizan.technonextcodingassessment.designsystem.R
 import com.srizan.technonextcodingassessment.designsystem.theme.AppTheme
 import com.srizan.technonextcodingassessment.domain.validation.PasswordStrength
+import com.srizan.technonextcodingassessment.signup.components.PasswordCriteria
 import com.srizan.technonextcodingassessment.ui.HandleEvent
 
 /**
@@ -64,9 +62,7 @@ import com.srizan.technonextcodingassessment.ui.HandleEvent
  */
 @Composable
 internal fun SignUpScreen(
-    onRegisterSuccess: () -> Unit,
-    onNavigateToSignIn: () -> Unit,
-    modifier: Modifier = Modifier
+    onRegisterSuccess: () -> Unit, onNavigateToSignIn: () -> Unit, modifier: Modifier = Modifier
 ) {
     val viewModel: SignUpViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -173,16 +169,13 @@ fun SignUpScreen(
                     )
                 },
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Email,
-                    imeAction = ImeAction.Next
+                    keyboardType = KeyboardType.Email, imeAction = ImeAction.Next
                 ),
                 keyboardActions = KeyboardActions(
-                    onNext = { focusManager.moveFocus(FocusDirection.Down) }
-                ),
+                    onNext = { focusManager.moveFocus(FocusDirection.Down) }),
                 singleLine = true,
                 isError = uiState.emailError != null,
-                supportingText = uiState.emailError?.let { { Text(it) } }
-            )
+                supportingText = uiState.emailError?.let { { Text(it) } })
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -213,16 +206,13 @@ fun SignUpScreen(
                 },
                 visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Next
+                    keyboardType = KeyboardType.Password, imeAction = ImeAction.Next
                 ),
                 keyboardActions = KeyboardActions(
-                    onNext = { focusManager.moveFocus(FocusDirection.Down) }
-                ),
+                    onNext = { focusManager.moveFocus(FocusDirection.Down) }),
                 singleLine = true,
                 isError = uiState.passwordError != null,
-                supportingText = uiState.passwordError?.let { { Text(it) } }
-            )
+                supportingText = uiState.passwordError?.let { { Text(it) } })
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -253,19 +243,16 @@ fun SignUpScreen(
                 },
                 visualTransformation = if (isConfirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Done
+                    keyboardType = KeyboardType.Password, imeAction = ImeAction.Done
                 ),
                 keyboardActions = KeyboardActions(
                     onDone = {
                         focusManager.clearFocus()
                         if (uiState.isFormValid) onRegisterClick()
-                    }
-                ),
+                    }),
                 singleLine = true,
                 isError = uiState.confirmPasswordError != null,
-                supportingText = uiState.confirmPasswordError?.let { { Text(it) } }
-            )
+                supportingText = uiState.confirmPasswordError?.let { { Text(it) } })
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -287,8 +274,7 @@ fun SignUpScreen(
                     text = error,
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.semantics { contentDescription = errorContentDesc }
-                )
+                    modifier = Modifier.semantics { contentDescription = errorContentDesc })
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
@@ -302,8 +288,7 @@ fun SignUpScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
-                    .semantics { contentDescription = buttonContentDesc }
-            ) {
+                    .semantics { contentDescription = buttonContentDesc }) {
                 if (uiState.isLoading) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(20.dp),
@@ -327,16 +312,14 @@ fun SignUpScreen(
             Row(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.semantics { contentDescription = signInSectionContentDesc }
-            ) {
+                modifier = Modifier.semantics { contentDescription = signInSectionContentDesc }) {
                 Text(
                     stringResource(R.string.signup_signin_text),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 TextButton(
-                    onClick = onSignInClick,
-                    enabled = !uiState.isLoading
+                    onClick = onSignInClick, enabled = !uiState.isLoading
                 ) {
                     Text(
                         stringResource(R.string.signup_signin_button),
@@ -348,118 +331,6 @@ fun SignUpScreen(
     }
 }
 
-
-@Composable
-fun PasswordCriteria(
-    password: String,
-    passwordStrength: PasswordStrength,
-    modifier: Modifier = Modifier
-) {
-    Column(modifier = modifier) {
-        PasswordCriterion(
-            text = stringResource(R.string.signup_password_requirement_length),
-            isValid = password.length >= 8
-        )
-        PasswordCriterion(
-            text = stringResource(R.string.signup_password_requirement_uppercase),
-            isValid = password.any { it.isUpperCase() }
-        )
-        PasswordCriterion(
-            text = "Contains lowercase letter",
-            isValid = password.any { it.isLowerCase() }
-        )
-        PasswordCriterion(
-            text = "Contains number",
-            isValid = password.any { it.isDigit() }
-        )
-        PasswordCriterion(
-            text = "Contains special character",
-            isValid = password.any { !it.isLetterOrDigit() }
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        PasswordStrengthLabel(passwordStrength)
-    }
-}
-
-@Composable
-fun PasswordCriterion(
-    text: String,
-    isValid: Boolean,
-    modifier: Modifier = Modifier
-) {
-    val icon = if (isValid) Icons.Default.CheckCircle else Icons.Default.Clear
-    val color = if (isValid) {
-        Color(0xFF4CAF50) // Success green
-    } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
-    }
-
-    Row(
-        modifier = modifier.padding(vertical = 2.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            icon,
-            contentDescription = if (isValid) "Criteria met" else "Criteria not met",
-            tint = color,
-            modifier = Modifier.size(16.dp)
-        )
-        Text(
-            text,
-            color = color,
-            style = MaterialTheme.typography.bodySmall
-        )
-    }
-}
-
-@Composable
-fun PasswordStrengthLabel(passwordStrength: PasswordStrength) {
-    val (strengthText, color) = when (passwordStrength) {
-        PasswordStrength.WEAK -> "Weak" to Color.Red
-        PasswordStrength.MODERATE -> "Moderate" to Color(0xFFFF9800) // Orange
-        PasswordStrength.STRONG -> "Strong" to Color(0xFF4CAF50) // Green
-    }
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Text(
-            "Strength: ",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Text(
-            strengthText,
-            color = color,
-            style = MaterialTheme.typography.bodySmall,
-            fontWeight = FontWeight.Medium
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun PasswordCriteriaPreview() {
-    AppTheme {
-        Surface {
-            Column(modifier = Modifier.padding(16.dp)) {
-                PasswordCriteria(
-                    password = "123456",
-                    passwordStrength = PasswordStrength.WEAK
-                )
-                Spacer(modifier = Modifier.height(24.dp))
-                PasswordCriteria(
-                    password = "Strong#2025",
-                    passwordStrength = PasswordStrength.STRONG
-                )
-            }
-        }
-    }
-}
 
 @Preview(showBackground = true, name = "Sign Up Screen - Empty")
 @Composable

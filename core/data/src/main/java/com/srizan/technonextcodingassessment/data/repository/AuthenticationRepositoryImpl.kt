@@ -35,7 +35,7 @@ class AuthenticationRepositoryImpl @Inject constructor(
     }
 
     override suspend fun signIn(email: String, password: String): Result<Unit> {
-        delay(3000) // Simulate network delay
+        delay(2000) // Simulate network delay
         
         // Basic validation
         if (!ValidationRules.isValidEmail(email)) {
@@ -43,7 +43,7 @@ class AuthenticationRepositoryImpl @Inject constructor(
         }
         
         val user = userDao.getUserByEmail(email) 
-            ?: return Result.failure(Exception("Invalid credentials"))
+            ?: return Result.failure(Exception("User doesn't exist"))
             
         return if (password == user.password) {
             Result.success(Unit)

@@ -17,27 +17,21 @@ fun NavController.navigateClearingStack(
     restoreState: Boolean = true // Usually good to restore state if navigating back
 ) {
     val currentGraphStartDestinationId = this.graph.startDestinationId
-    val popUpToDestinationId = if (popUpToRoute != null) {
-        // This is a bit more complex if popUpToRoute is not a NavDestination.id
-        // For simplicity, this example assumes popUpToRoute maps to an ID or we stick to graph start
-        // If popUpToRoute is a @Serializable object, you might not directly get its ID here
-        // without more context or a way to resolve it to an ID within the current graph.
-        // For most common cases, popping to graph.findStartDestination().id is what you need.
-        // If you need to pop to a specific *route object*, you'd typically pass its ID
-        // or let NavOptionsBuilder resolve it if it can.
-        // For this reusable function, sticking to graph's start is often safest.
+    val popUpToDestinationId = popUpToRoute?.let { route ->
         try {
-            // Attempt to find the destination if 'popUpToRoute' is a route string or serializable
-            // This is a simplification; robust route-to-ID resolution might be needed.
-            if (popUpToRoute is String) this.graph.findNode(popUpToRoute)?.id
-                ?: currentGraphStartDestinationId
-            else currentGraphStartDestinationId // Fallback or handle based on how you define popUpToRoute
+            // Handle string routes for backward compatibility
+            if (route is String) {
+                this.graph.findNode(route)?.id ?: currentGraphStartDestinationId
+            } else {
+                // For serializable objects, use graph start as safe fallback
+                // In most authentication flows, clearing to start is the desired behavior
+                currentGraphStartDestinationId
+            }
         } catch (e: IllegalArgumentException) {
-            currentGraphStartDestinationId // Fallback if route not found
+            // Fallback to graph start if route resolution fails
+            currentGraphStartDestinationId
         }
-    } else {
-        currentGraphStartDestinationId
-    }
+    } ?: currentGraphStartDestinationId
 
 
     val options = navOptions {

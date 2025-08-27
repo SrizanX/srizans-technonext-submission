@@ -24,6 +24,18 @@ import com.srizan.technonextcodingassessment.ui.LoadingIndicatorType
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Main application composable that serves as the root of the UI hierarchy.
+ * 
+ * Manages:
+ * - Authentication state-based routing
+ * - Theme configuration (system/light/dark)
+ * - Loading states during app initialization
+ * - Navigation container setup
+ * 
+ * @param isUserLoggedIn Flow providing user authentication state
+ * @param getAppThemeConfig Flow providing theme configuration
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun App(

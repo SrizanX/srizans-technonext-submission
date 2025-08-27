@@ -1,17 +1,19 @@
 package com.srizan.technonextcodingassessment.domain.validation
 
-import android.util.Patterns
-
 /**
  * Centralized validation rules to ensure consistency across UI and data layers
  */
 object ValidationRules {
     
     /**
-     * Email validation using Android's built-in pattern matcher
+     * Email validation using custom regex pattern
+     * Validates basic email format: localpart@domain.tld
      */
     fun isValidEmail(email: String): Boolean {
-        return email.isNotBlank() && Patterns.EMAIL_ADDRESS.matcher(email).matches()
+        if (email.isBlank()) return false
+        
+        val emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$".toRegex()
+        return emailRegex.matches(email)
     }
     
     /**

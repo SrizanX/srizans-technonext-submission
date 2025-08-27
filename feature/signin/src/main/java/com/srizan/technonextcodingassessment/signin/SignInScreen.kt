@@ -96,14 +96,14 @@ internal fun SignInScreen(
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
-    
-    // Extract string resources for use throughout the composable
+
     val showPasswordDesc = stringResource(R.string.signin_password_show_content_description)
     val hidePasswordDesc = stringResource(R.string.signin_password_hide_content_description)
     val emailContentDesc = stringResource(R.string.signin_email_content_description)
     val passwordContentDesc = stringResource(R.string.signin_password_content_description)
     val buttonContentDesc = stringResource(R.string.signin_button_content_description)
-    val signupSectionContentDesc = stringResource(R.string.signin_signup_section_content_description)
+    val signupSectionContentDesc =
+        stringResource(R.string.signin_signup_section_content_description)
 
     Box(
         modifier = modifier
@@ -255,14 +255,16 @@ internal fun SignInScreen(
                     onClick = onSignUpClick, enabled = !uiState.isLoading
                 ) {
                     Text(
-                        stringResource(R.string.signin_signup_button), fontWeight = FontWeight.Medium
+                        stringResource(R.string.signin_signup_button),
+                        fontWeight = FontWeight.Medium
                     )
                 }
             }
 
             // Error Message Display
             uiState.errorMessage?.let { error ->
-                val errorContentDesc = stringResource(R.string.signin_error_content_description, error)
+                val errorContentDesc =
+                    stringResource(R.string.signin_error_content_description, error)
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = error,
@@ -276,7 +278,6 @@ internal fun SignInScreen(
 
 @Preview(showBackground = true, name = "Light Mode")
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
-@Preview(showBackground = true, device = "spec:width=360dp,height=640dp", name = "Small Screen")
 @Composable
 private fun SignInPreview() {
     AppTheme {
