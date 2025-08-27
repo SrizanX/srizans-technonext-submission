@@ -5,4 +5,86 @@
     <string name="app_theme_mode_config_light">Light</string>
     <string name="app_theme_mode_config_dark">Dark</string>
     <string name="app_theme_mode_config_system_default">System default</string>
+    
+    <!-- Posts Screen -->
+    <string name="posts_title">Posts</string>
+    <string name="posts_search_placeholder">Search posts…</string>
+    <string name="posts_search_content_description">Search posts</string>
+    <string name="posts_close_search_content_description">Close search</string>
+    <string name="posts_more_options_content_description">More options</string>
+    
+    <!-- Menu Items -->
+    <string name="posts_menu_delete_all">Delete All Posts</string>
+    <string name="posts_menu_logout">Logout</string>
+    
+    <!-- Dialog Strings -->
+    <string name="posts_confirm_sign_out_title">Confirm Sign Out</string>
+    <string name="posts_confirm_sign_out_message">Are you sure you want to sign out?</string>
+    <string name="posts_confirm_delete_all_title">Confirm Delete All Posts</string>
+    <string name="posts_confirm_delete_all_message">Are you sure you want to delete all posts? This action cannot be undone.</string>
+    
+    <!-- Error States -->
+    <string name="posts_error_failed_to_load">Failed to load posts</string>
+    <string name="posts_error_something_went_wrong">Something went wrong</string>
+    <string name="posts_error_failed_to_load_more">Failed to load more posts</string>
+    
+    <!-- Empty States -->
+    <string name="posts_empty_title">No posts yet</string>
+    <string name="posts_empty_description">Try refreshing to fetch the latest posts.</string>
+    <string name="posts_no_search_results_title">No posts found</string>
+    <string name="posts_no_search_results_description">No posts match your search for \"%1$s\"</string>
+    
+    <!-- Button Labels -->
+    <string name="posts_button_retry">Retry</string>
+    <string name="posts_button_refresh">Refresh</string>
+    <string name="posts_button_clear_search">Clear Search</string>
+    
+    <!-- Favourites Screen -->
+    <string name="favourites_title">Favourites</string>
+    <string name="favourites_empty_title">No Favourites Yet</string>
+    <string name="favourites_clear_all_content_description">Delete All Favourites</string>
+    <string name="favourites_confirm_clear_title">Clear All Favourites</string>
+    <string name="favourites_confirm_clear_message">Are you sure you want to clear all favourites?</string>
+    
+    <!-- Sign In Screen -->
+    <string name="signin_title">Welcome Back</string>
+    <string name="signin_subtitle">Sign in to your account</string>
+    <string name="signin_email_label">Email Address</string>
+    <string name="signin_email_placeholder">Enter your email</string>
+    <string name="signin_email_content_description">Email input field</string>
+    <string name="signin_email_icon_content_description">Email icon</string>
+    <string name="signin_password_label">Password</string>
+    <string name="signin_password_placeholder">Enter your password</string>
+    <string name="signin_password_content_description">Password input field</string>
+    <string name="signin_password_icon_content_description">Password icon</string>
+    <string name="signin_password_show_content_description">Show password</string>
+    <string name="signin_password_hide_content_description">Hide password</string>
+    <string name="signin_button_label">Sign In</string>
+    <string name="signin_button_loading">Signing In…</string>
+    <string name="signin_button_content_description">Sign in button</string>
+    <string name="signin_signup_section_content_description">Sign up section</string>
+    <string name="signin_signup_text">Don\'t have an account? </string>
+    <string name="signin_signup_button">Sign Up</string>
+    <string name="signin_error_content_description">Error message: %1$s</string>
+    
+    <!-- Sign Up Screen -->
+    <string name="signup_title">Create Account</string>
+    <string name="signup_subtitle">Sign up to get started</string>
+    <string name="signup_email_label">Email</string>
+    <string name="signup_email_content_description">Email input field</string>
+    <string name="signup_password_label">Password</string>
+    <string name="signup_password_content_description">Password input field</string>
+    <string name="signup_confirm_password_label">Confirm Password</string>
+    <string name="signup_confirm_password_content_description">Confirm password input field</string>
+    <string name="signup_password_show_content_description">Show password</string>
+    <string name="signup_password_hide_content_description">Hide password</string>
+    <string name="signup_button_label">Sign Up</string>
+    <string name="signup_button_loading">Creating Account…</string>
+    <string name="signup_button_content_description">Sign up button</string>
+    <string name="signup_signin_section_content_description">Sign in section</string>
+    <string name="signup_signin_text">Already have an account? </string>
+    <string name="signup_signin_button">Sign In</string>
+    <string name="signup_error_content_description">Error message: %1$s</string>
+    <string name="signup_password_requirement_length">At least 8 characters</string>
+    <string name="signup_password_requirement_uppercase">Contains uppercase letter</string>
 </resources>

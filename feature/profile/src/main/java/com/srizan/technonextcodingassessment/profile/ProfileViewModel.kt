@@ -30,7 +30,6 @@ class ProfileViewModel @Inject constructor(
 
     fun changeAppThemeConfig(themeConfig: AppThemeConfig) {
         viewModelScope.launch {
-            Log.d("asd", "changeAppThemeConfig: $themeConfig")
             preferenceRepository.setAppThemeConfig(themeConfig)
         }
     }

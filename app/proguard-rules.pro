@@ -19,3 +19,33 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Keep all generated protobuf classes completely
+-keep class com.srizan.technonextcodingassessment.datastore.** { *; }
+
+# Keep all protobuf runtime classes
+-keep class com.google.protobuf.** { *; }
+-dontwarn com.google.protobuf.**
+
+# Keep protobuf generated message classes and their fields
+-keepclassmembers class * extends com.google.protobuf.GeneratedMessageLite {
+    <fields>;
+    <methods>;
+}
+
+# Keep protobuf builders
+-keepclassmembers class * extends com.google.protobuf.GeneratedMessageLite$Builder {
+    <methods>;
+}
+
+# Specifically keep the AppsProtoPrefs class that's causing issues
+-keep class com.srizan.technonextcodingassessment.datastore.AppsProtoPrefs { *; }
+-keep class com.srizan.technonextcodingassessment.datastore.AppsProtoPrefs$Builder { *; }
+
+# Keep DataStore serializers
+-keep class * extends androidx.datastore.core.Serializer { *; }
+
+# Keep all fields that end with underscore (protobuf naming convention)
+-keepclassmembers class * {
+    *** *_;
+}

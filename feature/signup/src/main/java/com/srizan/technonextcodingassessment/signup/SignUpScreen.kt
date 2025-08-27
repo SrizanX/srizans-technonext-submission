@@ -42,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -53,6 +54,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.srizan.technonextcodingassessment.designsystem.R
 import com.srizan.technonextcodingassessment.designsystem.theme.AppTheme
 import com.srizan.technonextcodingassessment.domain.validation.PasswordStrength
 import com.srizan.technonextcodingassessment.ui.HandleEvent
@@ -74,6 +76,7 @@ internal fun SignUpScreen(
             is SignUpViewModel.UiEvent.RegisterError -> {
                 // Error handling is done through uiState.errorMessage
             }
+
             SignUpViewModel.UiEvent.RegisterSuccess -> onRegisterSuccess()
         }
     }
@@ -98,16 +101,27 @@ internal fun SignUpScreen(
 @Composable
 fun SignUpScreen(
     uiState: SignUpViewModel.UiState,
+    modifier: Modifier = Modifier,
     onEmailChange: (String) -> Unit = {},
     onPasswordChange: (String) -> Unit = {},
     onConfirmPasswordChange: (String) -> Unit = {},
     onRegisterClick: () -> Unit = {},
     onSignInClick: () -> Unit = {},
-    modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
     var isPasswordVisible by remember { mutableStateOf(false) }
     var isConfirmPasswordVisible by remember { mutableStateOf(false) }
+
+    // Extract string resources for use throughout the composable
+    val showPasswordDesc = stringResource(R.string.signup_password_show_content_description)
+    val hidePasswordDesc = stringResource(R.string.signup_password_hide_content_description)
+    val emailContentDesc = stringResource(R.string.signup_email_content_description)
+    val passwordContentDesc = stringResource(R.string.signup_password_content_description)
+    val confirmPasswordContentDesc =
+        stringResource(R.string.signup_confirm_password_content_description)
+    val buttonContentDesc = stringResource(R.string.signup_button_content_description)
+    val signInSectionContentDesc =
+        stringResource(R.string.signup_signin_section_content_description)
 
     Box(
         modifier = modifier
@@ -128,14 +142,14 @@ fun SignUpScreen(
                 modifier = Modifier.padding(bottom = 32.dp)
             ) {
                 Text(
-                    text = "Create Account",
+                    text = stringResource(R.string.signup_title),
                     style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Sign up to get started",
+                    text = stringResource(R.string.signup_subtitle),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -147,8 +161,10 @@ fun SignUpScreen(
                 onValueChange = onEmailChange,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .semantics { contentDescription = "Email input field" },
-                label = { Text("Email") },
+                    .semantics {
+                        contentDescription = emailContentDesc
+                    },
+                label = { Text(stringResource(R.string.signup_email_label)) },
                 leadingIcon = {
                     Icon(
                         Icons.Default.Email,
@@ -176,8 +192,10 @@ fun SignUpScreen(
                 onValueChange = onPasswordChange,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .semantics { contentDescription = "Password input field" },
-                label = { Text("Password") },
+                    .semantics {
+                        contentDescription = passwordContentDesc
+                    },
+                label = { Text(stringResource(R.string.signup_password_label)) },
                 leadingIcon = {
                     Icon(
                         Icons.Default.Key,
@@ -189,7 +207,7 @@ fun SignUpScreen(
                     IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
                         Icon(
                             if (isPasswordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                            contentDescription = if (isPasswordVisible) "Hide password" else "Show password"
+                            contentDescription = if (isPasswordVisible) hidePasswordDesc else showPasswordDesc
                         )
                     }
                 },
@@ -214,8 +232,10 @@ fun SignUpScreen(
                 onValueChange = onConfirmPasswordChange,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .semantics { contentDescription = "Confirm password input field" },
-                label = { Text("Confirm Password") },
+                    .semantics {
+                        contentDescription = confirmPasswordContentDesc
+                    },
+                label = { Text(stringResource(R.string.signup_confirm_password_label)) },
                 leadingIcon = {
                     Icon(
                         Icons.Default.Key,
@@ -227,7 +247,7 @@ fun SignUpScreen(
                     IconButton(onClick = { isConfirmPasswordVisible = !isConfirmPasswordVisible }) {
                         Icon(
                             if (isConfirmPasswordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                            contentDescription = if (isConfirmPasswordVisible) "Hide password" else "Show password"
+                            contentDescription = if (isConfirmPasswordVisible) hidePasswordDesc else showPasswordDesc
                         )
                     }
                 },
@@ -237,7 +257,7 @@ fun SignUpScreen(
                     imeAction = ImeAction.Done
                 ),
                 keyboardActions = KeyboardActions(
-                    onDone = { 
+                    onDone = {
                         focusManager.clearFocus()
                         if (uiState.isFormValid) onRegisterClick()
                     }
@@ -261,11 +281,13 @@ fun SignUpScreen(
 
             // Error Message
             uiState.errorMessage?.let { error ->
+                val errorContentDesc =
+                    stringResource(R.string.signup_error_content_description, error)
                 Text(
                     text = error,
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.semantics { contentDescription = "Error message: $error" }
+                    modifier = Modifier.semantics { contentDescription = errorContentDesc }
                 )
                 Spacer(modifier = Modifier.height(16.dp))
             }
@@ -280,7 +302,7 @@ fun SignUpScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
-                    .semantics { contentDescription = "Sign up button" }
+                    .semantics { contentDescription = buttonContentDesc }
             ) {
                 if (uiState.isLoading) {
                     CircularProgressIndicator(
@@ -289,10 +311,10 @@ fun SignUpScreen(
                         strokeWidth = 2.dp
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Creating Account...")
+                    Text(stringResource(R.string.signup_button_loading))
                 } else {
                     Text(
-                        "Sign Up",
+                        stringResource(R.string.signup_button_label),
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Medium
                     )
@@ -305,10 +327,10 @@ fun SignUpScreen(
             Row(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.semantics { contentDescription = "Sign in section" }
+                modifier = Modifier.semantics { contentDescription = signInSectionContentDesc }
             ) {
                 Text(
-                    "Already have an account? ",
+                    stringResource(R.string.signup_signin_text),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -317,7 +339,7 @@ fun SignUpScreen(
                     enabled = !uiState.isLoading
                 ) {
                     Text(
-                        "Sign In",
+                        stringResource(R.string.signup_signin_button),
                         fontWeight = FontWeight.Medium
                     )
                 }
@@ -335,36 +357,36 @@ fun PasswordCriteria(
 ) {
     Column(modifier = modifier) {
         PasswordCriterion(
-            text = "At least 8 characters", 
+            text = stringResource(R.string.signup_password_requirement_length),
             isValid = password.length >= 8
         )
         PasswordCriterion(
-            text = "Contains uppercase letter", 
+            text = stringResource(R.string.signup_password_requirement_uppercase),
             isValid = password.any { it.isUpperCase() }
         )
         PasswordCriterion(
-            text = "Contains lowercase letter", 
+            text = "Contains lowercase letter",
             isValid = password.any { it.isLowerCase() }
         )
         PasswordCriterion(
-            text = "Contains number", 
+            text = "Contains number",
             isValid = password.any { it.isDigit() }
         )
         PasswordCriterion(
-            text = "Contains special character", 
+            text = "Contains special character",
             isValid = password.any { !it.isLetterOrDigit() }
         )
 
         Spacer(modifier = Modifier.height(8.dp))
-        
+
         PasswordStrengthLabel(passwordStrength)
     }
 }
 
 @Composable
 fun PasswordCriterion(
-    text: String, 
-    isValid: Boolean, 
+    text: String,
+    isValid: Boolean,
     modifier: Modifier = Modifier
 ) {
     val icon = if (isValid) Icons.Default.CheckCircle else Icons.Default.Clear
@@ -380,7 +402,7 @@ fun PasswordCriterion(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            icon, 
+            icon,
             contentDescription = if (isValid) "Criteria met" else "Criteria not met",
             tint = color,
             modifier = Modifier.size(16.dp)
@@ -426,12 +448,12 @@ private fun PasswordCriteriaPreview() {
         Surface {
             Column(modifier = Modifier.padding(16.dp)) {
                 PasswordCriteria(
-                    password = "123456", 
+                    password = "123456",
                     passwordStrength = PasswordStrength.WEAK
                 )
                 Spacer(modifier = Modifier.height(24.dp))
                 PasswordCriteria(
-                    password = "Strong#2025", 
+                    password = "Strong#2025",
                     passwordStrength = PasswordStrength.STRONG
                 )
             }

@@ -3,13 +3,13 @@ package com.srizan.technonextcodingassessment.datastore
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
-import com.srizan.technonextcodingassessment.datastore.AppThemeConfig as ProtoAppThemeConfig
 import com.srizan.technonextcodingassessment.domain.datasource.PreferenceDataSource
 import com.srizan.technonextcodingassessment.model.AppThemeConfig
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
+import com.srizan.technonextcodingassessment.datastore.AppThemeConfig as ProtoAppThemeConfig
 
 
 val Context.appsProtoPrefs: DataStore<AppsProtoPrefs> by dataStore(

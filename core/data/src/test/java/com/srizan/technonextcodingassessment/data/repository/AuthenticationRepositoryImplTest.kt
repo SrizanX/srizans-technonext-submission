@@ -3,10 +3,15 @@ package com.srizan.technonextcodingassessment.data.repository
 import com.srizan.technonextcodingassessment.cache.dao.UserDao
 import com.srizan.technonextcodingassessment.cache.entity.UserEntity
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
-import org.junit.Assert.*
 import org.junit.runner.RunWith
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 
 /**

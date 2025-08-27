@@ -6,6 +6,10 @@ plugins {
 
 android {
     namespace = "com.srizan.technonextcodingassessment.datastore"
+    
+    defaultConfig {
+        consumerProguardFiles("consumer-rules.pro")
+    }
 }
 
 dependencies {

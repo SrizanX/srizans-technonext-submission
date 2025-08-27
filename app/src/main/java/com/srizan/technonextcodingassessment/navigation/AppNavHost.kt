@@ -2,10 +2,8 @@ package com.srizan.technonextcodingassessment.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.navOptions
 import com.srizan.technonextcodingassessment.favourites.favouritesGraph
 import com.srizan.technonextcodingassessment.posts.PostNavKey
 import com.srizan.technonextcodingassessment.posts.postGraph

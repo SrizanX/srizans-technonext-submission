@@ -38,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,6 +48,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.srizan.technonextcodingassessment.designsystem.R
 import com.srizan.technonextcodingassessment.designsystem.theme.AppTheme
 import com.srizan.technonextcodingassessment.model.Post
 import com.srizan.technonextcodingassessment.ui.AppAlertDialog
@@ -64,7 +66,7 @@ internal fun PostScreen(
     val viewModel: PostViewModel = hiltViewModel()
     val postUiState by viewModel.uiState.collectAsStateWithLifecycle()
     val posts = viewModel.pagedPosts.collectAsLazyPagingItems()
-    
+
     PostScreen(
         postUiState = postUiState,
         posts = posts,
@@ -85,7 +87,7 @@ internal fun PostScreen(
 
 /**
  * Main screen for displaying posts with search, refresh, and management capabilities.
- * 
+ *
  * @param postUiState Current UI state containing loading/error states and search query
  * @param posts Paginated list of posts
  * @param onQueryChange Callback for search query changes
@@ -143,7 +145,7 @@ fun PostScreen(
                 },
                 onSignOutClick = { showSignOutConfirmationDialog = true },
             )
-            
+
             PostContent(
                 postUiState = postUiState,
                 posts = posts,
@@ -155,13 +157,13 @@ fun PostScreen(
             )
         }
 
-        // Error handling with Snackbar
+        // Error handling with SnackBar
         SnackbarHost(
             hostState = snackbarHostState,
             modifier = Modifier.align(Alignment.BottomCenter)
-        ) { snackbarData ->
+        ) { snackBarData ->
             Snackbar(
-                snackbarData = snackbarData,
+                snackbarData = snackBarData,
                 containerColor = MaterialTheme.colorScheme.errorContainer,
                 contentColor = MaterialTheme.colorScheme.onErrorContainer
             )
@@ -175,8 +177,8 @@ fun PostScreen(
                     showSignOutConfirmationDialog = false
                     onSignOut()
                 },
-                dialogTitle = "Confirm Sign Out",
-                dialogText = "Are you sure you want to sign out?",
+                dialogTitle = stringResource(R.string.posts_confirm_sign_out_title),
+                dialogText = stringResource(R.string.posts_confirm_sign_out_message),
                 icon = Icons.Default.Warning,
             )
         }
@@ -188,8 +190,8 @@ fun PostScreen(
                     showDeleteAllPostDialog = false
                     onDeleteAllClick()
                 },
-                dialogTitle = "Confirm Delete All Posts",
-                dialogText = "Are you sure you want to delete all posts? This action cannot be undone.",
+                dialogTitle = stringResource(R.string.posts_confirm_delete_all_title),
+                dialogText = stringResource(R.string.posts_confirm_delete_all_message),
                 icon = Icons.Default.Warning,
             )
         }
@@ -240,8 +242,8 @@ private fun PostContent(
         // Show error state when load failed and we have no items and we're not in initial loading
         isRefreshError && !hasItems && !postUiState.isInitialLoading -> {
             ErrorState(
-                message = (posts.loadState.refresh as LoadState.Error).error.message 
-                    ?: "Failed to load posts",
+                message = (posts.loadState.refresh as LoadState.Error).error.message
+                    ?: stringResource(R.string.posts_error_failed_to_load),
                 onRetry = { posts.retry() },
                 modifier = modifier
             )
@@ -256,7 +258,7 @@ private fun PostContent(
                 )
             } else {
                 EmptyDataUi(
-                    onRefreshClick = onRefresh, 
+                    onRefreshClick = onRefresh,
                     modifier = modifier
                 )
             }
@@ -264,7 +266,7 @@ private fun PostContent(
         // Show posts list - prioritize showing content when available
         hasItems || (!postUiState.isInitialLoading && isRefreshNotLoading) -> {
             PullToRefreshBox(
-                isRefreshing = postUiState.isRefreshing, 
+                isRefreshing = postUiState.isRefreshing,
                 onRefresh = onRefresh,
                 modifier = modifier
             ) {
@@ -276,13 +278,13 @@ private fun PostContent(
                     items(posts.itemCount) { index ->
                         posts[index]?.let { post ->
                             PostItem(
-                                post = post, 
+                                post = post,
                                 onFavouriteClick = onFavouriteClick,
                                 modifier = Modifier.testTag("PostItem_${post.id}")
                             )
                         }
                     }
-                    
+
                     // Handle pagination loading
                     if (posts.loadState.append is LoadState.Loading) {
                         item {
@@ -293,14 +295,12 @@ private fun PostContent(
                                 contentAlignment = Alignment.Center
                             ) {
                                 CircularProgressIndicator(
-                                    modifier = Modifier.semantics {
-                                        contentDescription = "Loading more posts"
-                                    }
+                                    modifier = Modifier.padding(16.dp)
                                 )
                             }
                         }
                     }
-                    
+
                     // Handle pagination error
                     if (posts.loadState.append is LoadState.Error) {
                         item {
@@ -335,6 +335,11 @@ fun PostsAppBar(
 ) {
     var showMenu by remember { mutableStateOf(false) }
 
+    // Extract string resources for use in semantics blocks
+    val closeSearchDescription = stringResource(R.string.posts_close_search_content_description)
+    val searchPostsDescription = stringResource(R.string.posts_search_content_description)
+    val moreOptionsDescription = stringResource(R.string.posts_more_options_content_description)
+
     TopAppBar(
         title = {
             if (isSearchEnabled) {
@@ -344,21 +349,21 @@ fun PostsAppBar(
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag("SearchField"),
-                    placeholder = { Text("Search posts…") },
+                    placeholder = { Text(stringResource(R.string.posts_search_placeholder)) },
                     singleLine = true,
                     trailingIcon = {
                         IconButton(
                             onClick = onSearchToggle,
                             modifier = Modifier.semantics {
-                                contentDescription = "Close search"
+                                contentDescription = closeSearchDescription
                             }
                         ) {
-                            Icon(Icons.Default.Clear, contentDescription = "Close search")
+                            Icon(Icons.Default.Clear, contentDescription = closeSearchDescription)
                         }
                     },
                 )
             } else {
-                Text("Posts")
+                Text(stringResource(R.string.posts_title))
             }
         },
         modifier = modifier,
@@ -367,33 +372,33 @@ fun PostsAppBar(
                 IconButton(
                     onClick = onSearchToggle,
                     modifier = Modifier.semantics {
-                        contentDescription = "Search posts"
+                        contentDescription = searchPostsDescription
                     }
                 ) {
-                    Icon(Icons.Default.Search, contentDescription = "Search")
+                    Icon(Icons.Default.Search, contentDescription = searchPostsDescription)
                 }
             }
             IconButton(
                 onClick = { showMenu = !showMenu },
                 modifier = Modifier.semantics {
-                    contentDescription = "More options"
+                    contentDescription = moreOptionsDescription
                 }
             ) {
-                Icon(Icons.Default.MoreVert, contentDescription = "More")
+                Icon(Icons.Default.MoreVert, contentDescription = moreOptionsDescription)
             }
             DropdownMenu(
-                expanded = showMenu, 
+                expanded = showMenu,
                 onDismissRequest = { showMenu = false }
             ) {
                 DropdownMenuItem(
-                    text = { Text("Delete All Posts") }, 
+                    text = { Text(stringResource(R.string.posts_menu_delete_all)) },
                     onClick = {
                         onDeleteAllClick()
                         showMenu = false
                     }
                 )
                 DropdownMenuItem(
-                    text = { Text("Logout") }, 
+                    text = { Text(stringResource(R.string.posts_menu_logout)) },
                     onClick = {
                         onSignOutClick()
                         showMenu = false
@@ -427,7 +432,7 @@ fun ErrorState(
             modifier = Modifier.padding(bottom = 16.dp)
         )
         Text(
-            text = "Something went wrong",
+            text = stringResource(R.string.posts_error_something_went_wrong),
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.padding(bottom = 8.dp)
         )
@@ -441,7 +446,7 @@ fun ErrorState(
             onClick = onRetry,
             modifier = Modifier.testTag("RetryButton")
         ) {
-            Text("Retry")
+            Text(stringResource(R.string.posts_button_retry))
         }
     }
 }
@@ -461,7 +466,7 @@ fun PaginationErrorItem(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Failed to load more posts",
+            text = stringResource(R.string.posts_error_failed_to_load_more),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.error,
             modifier = Modifier.padding(bottom = 8.dp)
@@ -470,7 +475,7 @@ fun PaginationErrorItem(
             onClick = onRetry,
             modifier = Modifier.testTag("PaginationRetryButton")
         ) {
-            Text("Retry")
+            Text(stringResource(R.string.posts_button_retry))
         }
     }
 }
@@ -491,12 +496,12 @@ fun EmptyDataUi(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            "No posts yet", 
+            stringResource(R.string.posts_empty_title),
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.padding(bottom = 8.dp)
         )
         Text(
-            "Try refreshing to fetch the latest posts.",
+            stringResource(R.string.posts_empty_description),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(bottom = 16.dp)
@@ -505,7 +510,7 @@ fun EmptyDataUi(
             onClick = onRefreshClick,
             modifier = Modifier.testTag("RefreshButton")
         ) {
-            Text("Refresh")
+            Text(stringResource(R.string.posts_button_refresh))
         }
     }
 }
@@ -533,12 +538,12 @@ fun NoSearchResultsUi(
             modifier = Modifier.padding(bottom = 16.dp)
         )
         Text(
-            "No posts found", 
+            stringResource(R.string.posts_no_search_results_title),
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.padding(bottom = 8.dp)
         )
         Text(
-            "No posts match your search for \"$searchQuery\"",
+            stringResource(R.string.posts_no_search_results_description, searchQuery),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(bottom = 16.dp)
@@ -547,7 +552,7 @@ fun NoSearchResultsUi(
             onClick = onClearSearch,
             modifier = Modifier.testTag("ClearSearchButton")
         ) {
-            Text("Clear Search")
+            Text(stringResource(R.string.posts_button_clear_search))
         }
     }
 }

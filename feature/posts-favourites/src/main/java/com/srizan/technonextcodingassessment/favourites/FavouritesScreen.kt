@@ -21,9 +21,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.srizan.technonextcodingassessment.designsystem.R
 import com.srizan.technonextcodingassessment.designsystem.theme.AppTheme
 import com.srizan.technonextcodingassessment.model.Post
 import com.srizan.technonextcodingassessment.ui.AppAlertDialog
@@ -77,7 +79,8 @@ fun FavouritesScreen(
             contentAlignment = Alignment.Center,
         ) {
             Text(
-                "No Favourites Yet", style = MaterialTheme.typography.titleLarge
+                stringResource(R.string.favourites_empty_title), 
+                style = MaterialTheme.typography.titleLarge
             )
         }
 
@@ -87,8 +90,8 @@ fun FavouritesScreen(
                 showClearFavouritesDialog = false
                 onClearAllClick()
             },
-            dialogTitle = "Clear All Favourites",
-            dialogText = "Are you sure you want to clear all favourites?",
+            dialogTitle = stringResource(R.string.favourites_confirm_clear_title),
+            dialogText = stringResource(R.string.favourites_confirm_clear_message),
             icon = Icons.Default.Warning,
         )
     }
@@ -102,14 +105,14 @@ fun FavouritesAppBar(
     modifier: Modifier = Modifier,
 ) {
     TopAppBar(
-        title = { Text("Favourites") },
+        title = { Text(stringResource(R.string.favourites_title)) },
         modifier = modifier,
         actions = {
             onClearAllClick?.let {
                 IconButton(
                     onClick = onClearAllClick, modifier = Modifier.testTag("ClearAllFavourites")
                 ) {
-                    Icon(Icons.Default.Delete, contentDescription = "Delete All Favourites")
+                    Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.favourites_clear_all_content_description))
                 }
             }
         },

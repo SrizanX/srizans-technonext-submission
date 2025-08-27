@@ -43,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -54,6 +55,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.srizan.technonextcodingassessment.designsystem.R
 import com.srizan.technonextcodingassessment.designsystem.theme.AppTheme
 import com.srizan.technonextcodingassessment.ui.HandleEvent
 
@@ -94,6 +96,14 @@ internal fun SignInScreen(
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
+    
+    // Extract string resources for use throughout the composable
+    val showPasswordDesc = stringResource(R.string.signin_password_show_content_description)
+    val hidePasswordDesc = stringResource(R.string.signin_password_hide_content_description)
+    val emailContentDesc = stringResource(R.string.signin_email_content_description)
+    val passwordContentDesc = stringResource(R.string.signin_password_content_description)
+    val buttonContentDesc = stringResource(R.string.signin_button_content_description)
+    val signupSectionContentDesc = stringResource(R.string.signin_signup_section_content_description)
 
     Box(
         modifier = modifier
@@ -114,14 +124,14 @@ internal fun SignInScreen(
                 modifier = Modifier.padding(bottom = 32.dp)
             ) {
                 Text(
-                    text = "Welcome Back",
+                    text = stringResource(R.string.signin_title),
                     style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Sign in to your account",
+                    text = stringResource(R.string.signin_subtitle),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -133,12 +143,12 @@ internal fun SignInScreen(
             OutlinedTextField(
                 value = uiState.email,
                 onValueChange = onEmailInputChange,
-                label = { Text("Email Address") },
-                placeholder = { Text("Enter your email") },
+                label = { Text(stringResource(R.string.signin_email_label)) },
+                placeholder = { Text(stringResource(R.string.signin_email_placeholder)) },
                 leadingIcon = {
                     Icon(
                         Icons.Default.Email,
-                        contentDescription = "Email icon",
+                        contentDescription = stringResource(R.string.signin_email_icon_content_description),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 },
@@ -158,7 +168,7 @@ internal fun SignInScreen(
                 singleLine = true,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .semantics { contentDescription = "Email input field" })
+                    .semantics { contentDescription = emailContentDesc })
 
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -166,12 +176,12 @@ internal fun SignInScreen(
             OutlinedTextField(
                 value = uiState.password,
                 onValueChange = onPasswordInputChange,
-                label = { Text("Password") },
-                placeholder = { Text("Enter your password") },
+                label = { Text(stringResource(R.string.signin_password_label)) },
+                placeholder = { Text(stringResource(R.string.signin_password_placeholder)) },
                 leadingIcon = {
                     Icon(
                         Icons.Default.Key,
-                        contentDescription = "Password icon",
+                        contentDescription = stringResource(R.string.signin_password_icon_content_description),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 },
@@ -180,7 +190,7 @@ internal fun SignInScreen(
                         onClick = { isPasswordVisible = !isPasswordVisible }) {
                         Icon(
                             imageVector = if (isPasswordVisible) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                            contentDescription = if (isPasswordVisible) "Hide password" else "Show password",
+                            contentDescription = if (isPasswordVisible) hidePasswordDesc else showPasswordDesc,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -200,7 +210,7 @@ internal fun SignInScreen(
                 singleLine = true,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .semantics { contentDescription = "Password input field" })
+                    .semantics { contentDescription = passwordContentDesc })
 
             Spacer(modifier = Modifier.height(32.dp))
 
@@ -211,7 +221,7 @@ internal fun SignInScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
-                    .semantics { contentDescription = "Sign in button" }) {
+                    .semantics { contentDescription = buttonContentDesc }) {
                 if (uiState.isLoading) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(20.dp),
@@ -219,10 +229,10 @@ internal fun SignInScreen(
                         strokeWidth = 2.dp
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Signing In...")
+                    Text(stringResource(R.string.signin_button_loading))
                 } else {
                     Text(
-                        "Sign In",
+                        stringResource(R.string.signin_button_label),
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Medium
                     )
@@ -235,9 +245,9 @@ internal fun SignInScreen(
             Row(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.semantics { contentDescription = "Sign up section" }) {
+                modifier = Modifier.semantics { contentDescription = signupSectionContentDesc }) {
                 Text(
-                    "Don't have an account? ",
+                    stringResource(R.string.signin_signup_text),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -245,19 +255,20 @@ internal fun SignInScreen(
                     onClick = onSignUpClick, enabled = !uiState.isLoading
                 ) {
                     Text(
-                        "Sign Up", fontWeight = FontWeight.Medium
+                        stringResource(R.string.signin_signup_button), fontWeight = FontWeight.Medium
                     )
                 }
             }
 
             // Error Message Display
             uiState.errorMessage?.let { error ->
+                val errorContentDesc = stringResource(R.string.signin_error_content_description, error)
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = error,
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.semantics { contentDescription = "Error message: $error" })
+                    modifier = Modifier.semantics { contentDescription = errorContentDesc })
             }
         }
     }
