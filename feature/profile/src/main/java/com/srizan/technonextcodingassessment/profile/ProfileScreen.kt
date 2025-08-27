@@ -17,11 +17,34 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.srizan.technonextcodingassessment.designsystem.R
 import com.srizan.technonextcodingassessment.designsystem.theme.AppTheme
 import com.srizan.technonextcodingassessment.model.AppThemeConfig
 import com.srizan.technonextcodingassessment.ui.AppAlertDialog
 
+/**
+ * Internal composable that integrates with ViewModel and handles state management
+ */
+@Composable
+internal fun ProfileScreen(
+    modifier: Modifier = Modifier
+) {
+    val viewModel: ProfileViewModel = hiltViewModel()
+    val themeConfig by viewModel.appThemeConfig.collectAsStateWithLifecycle()
+    
+    ProfileScreen(
+        themeConfig = themeConfig,
+        onChangeDarkThemeConfig = viewModel::changeAppThemeConfig,
+        onSignOut = viewModel::signOut,
+        modifier = modifier
+    )
+}
+
+/**
+ * Public composable that accepts UI state and callbacks - for testing and previews
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(

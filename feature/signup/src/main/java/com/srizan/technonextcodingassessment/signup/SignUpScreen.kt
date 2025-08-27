@@ -21,7 +21,6 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Key
-import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
@@ -52,17 +51,58 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.srizan.technonextcodingassessment.designsystem.theme.AppTheme
 import com.srizan.technonextcodingassessment.domain.validation.PasswordStrength
+import com.srizan.technonextcodingassessment.ui.HandleEvent
+
+/**
+ * Internal composable that integrates with ViewModel and handles state management
+ */
+@Composable
+internal fun SignUpScreen(
+    onRegisterSuccess: () -> Unit,
+    onNavigateToSignIn: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val viewModel: SignUpViewModel = hiltViewModel()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    HandleEvent(viewModel.uiEvent) { event ->
+        when (event) {
+            is SignUpViewModel.UiEvent.RegisterError -> {
+                // Error handling is done through uiState.errorMessage
+            }
+            SignUpViewModel.UiEvent.RegisterSuccess -> onRegisterSuccess()
+        }
+    }
+
+    SignUpScreen(
+        uiState = uiState,
+        onEmailChange = viewModel::updateEmail,
+        onPasswordChange = viewModel::updatePassword,
+        onConfirmPasswordChange = viewModel::updateConfirmPassword,
+        onRegisterClick = {
+            viewModel.register(uiState.email, uiState.password, uiState.confirmPassword)
+        },
+        onSignInClick = onNavigateToSignIn,
+        modifier = modifier
+    )
+}
+
+/**
+ * Public composable that accepts UI state and callbacks - for testing and previews
+ */
 
 @Composable
-fun SignUpScreenContent(
+fun SignUpScreen(
     uiState: SignUpViewModel.UiState,
     onEmailChange: (String) -> Unit = {},
     onPasswordChange: (String) -> Unit = {},
     onConfirmPasswordChange: (String) -> Unit = {},
     onRegisterClick: () -> Unit = {},
-    onSignUpClick: () -> Unit = {},
+    onSignInClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
@@ -273,7 +313,7 @@ fun SignUpScreenContent(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 TextButton(
-                    onClick = onSignUpClick,
+                    onClick = onSignInClick,
                     enabled = !uiState.isLoading
                 ) {
                     Text(
@@ -404,7 +444,7 @@ private fun PasswordCriteriaPreview() {
 private fun SignUpScreenEmptyPreview() {
     AppTheme {
         Surface {
-            SignUpScreenContent(
+            SignUpScreen(
                 uiState = SignUpViewModel.UiState()
             )
         }
@@ -416,7 +456,7 @@ private fun SignUpScreenEmptyPreview() {
 private fun SignUpScreenWithDataPreview() {
     AppTheme {
         Surface {
-            SignUpScreenContent(
+            SignUpScreen(
                 uiState = SignUpViewModel.UiState(
                     email = "user@example.com",
                     password = "StrongPass123!",
@@ -434,7 +474,7 @@ private fun SignUpScreenWithDataPreview() {
 private fun SignUpScreenLoadingPreview() {
     AppTheme {
         Surface {
-            SignUpScreenContent(
+            SignUpScreen(
                 uiState = SignUpViewModel.UiState(
                     email = "user@example.com",
                     password = "StrongPass123!",
@@ -453,7 +493,7 @@ private fun SignUpScreenLoadingPreview() {
 private fun SignUpScreenErrorPreview() {
     AppTheme {
         Surface {
-            SignUpScreenContent(
+            SignUpScreen(
                 uiState = SignUpViewModel.UiState(
                     email = "invalid-email",
                     password = "weak",

@@ -3,10 +3,8 @@ package com.srizan.technonextcodingassessment.posts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -42,14 +40,48 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import com.srizan.technonextcodingassessment.designsystem.theme.AppTheme
 import com.srizan.technonextcodingassessment.model.Post
 import com.srizan.technonextcodingassessment.ui.AppAlertDialog
 import com.srizan.technonextcodingassessment.ui.FullScreenLoading
 import com.srizan.technonextcodingassessment.ui.PostItem
 import kotlinx.coroutines.delay
+
+/**
+ * Internal composable that integrates with ViewModel and handles state management
+ */
+@Composable
+internal fun PostScreen(
+    modifier: Modifier = Modifier
+) {
+    val viewModel: PostViewModel = hiltViewModel()
+    val postUiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val posts = viewModel.pagedPosts.collectAsLazyPagingItems()
+    
+    PostScreen(
+        postUiState = postUiState,
+        posts = posts,
+        onQueryChange = viewModel::updateSearchQuery,
+        onRefresh = viewModel::refreshPosts,
+        onFavouriteClick = viewModel::toggleFavourite,
+        onDeleteAllClick = viewModel::deleteAllPosts,
+        onSignOut = viewModel::signOut,
+        onErrorDismiss = viewModel::clearError,
+        onDataLoaded = viewModel::onDataLoaded,
+        modifier = modifier
+    )
+}
+
+/**
+ * Public composable that accepts UI state and callbacks - for testing and previews
+ */
 
 /**
  * Main screen for displaying posts with search, refresh, and management capabilities.
@@ -118,6 +150,7 @@ fun PostScreen(
                 onRefresh = onRefresh,
                 onFavouriteClick = onFavouriteClick,
                 onDataLoaded = onDataLoaded,
+                onQueryChange = onQueryChange,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -174,6 +207,7 @@ private fun PostContent(
     onRefresh: () -> Unit,
     onFavouriteClick: (Post) -> Unit,
     onDataLoaded: () -> Unit,
+    onQueryChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val isRefreshLoading = posts.loadState.refresh is LoadState.Loading
@@ -214,10 +248,18 @@ private fun PostContent(
         }
         // Show empty state only when we're definitely done loading and have no data
         !postUiState.isInitialLoading && !hasItems && isRefreshNotLoading && postUiState.hasCheckedCache -> {
-            EmptyDataUi(
-                onRefreshClick = onRefresh, 
-                modifier = modifier
-            )
+            if (!postUiState.searchQuery.isNullOrBlank()) {
+                NoSearchResultsUi(
+                    searchQuery = postUiState.searchQuery,
+                    onClearSearch = { onQueryChange("") },
+                    modifier = modifier
+                )
+            } else {
+                EmptyDataUi(
+                    onRefreshClick = onRefresh, 
+                    modifier = modifier
+                )
+            }
         }
         // Show posts list - prioritize showing content when available
         hasItems || (!postUiState.isInitialLoading && isRefreshNotLoading) -> {
@@ -465,5 +507,68 @@ fun EmptyDataUi(
         ) {
             Text("Refresh")
         }
+    }
+}
+
+/**
+ * No search results component shown when search query returns no results.
+ */
+@Composable
+fun NoSearchResultsUi(
+    searchQuery: String,
+    onClearSearch: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            imageVector = Icons.Default.Search,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+        Text(
+            "No posts found", 
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        Text(
+            "No posts match your search for \"$searchQuery\"",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+        OutlinedButton(
+            onClick = onClearSearch,
+            modifier = Modifier.testTag("ClearSearchButton")
+        ) {
+            Text("Clear Search")
+        }
+    }
+}
+
+@Preview(showBackground = true, name = "Empty Posts State")
+@Composable
+private fun EmptyDataUiPreview() {
+    AppTheme {
+        EmptyDataUi(
+            onRefreshClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "No Search Results State")
+@Composable
+private fun NoSearchResultsUiPreview() {
+    AppTheme {
+        NoSearchResultsUi(
+            searchQuery = "android development",
+            onClearSearch = {}
+        )
     }
 }

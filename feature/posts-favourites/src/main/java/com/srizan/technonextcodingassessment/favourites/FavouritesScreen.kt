@@ -22,12 +22,35 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.srizan.technonextcodingassessment.designsystem.theme.AppTheme
 import com.srizan.technonextcodingassessment.model.Post
 import com.srizan.technonextcodingassessment.ui.AppAlertDialog
 import com.srizan.technonextcodingassessment.ui.PostList
 import kotlin.random.Random
 
+/**
+ * Internal composable that integrates with ViewModel and handles state management
+ */
+@Composable
+internal fun FavouritesScreen(
+    modifier: Modifier = Modifier
+) {
+    val viewModel: FavouritesViewModel = hiltViewModel()
+    val favouritePostsUiState by viewModel.posts.collectAsStateWithLifecycle()
+    
+    FavouritesScreen(
+        posts = favouritePostsUiState,
+        onFavouriteClick = viewModel::toggleFavourite,
+        onClearAllClick = viewModel::clearAllFavourites,
+        modifier = modifier
+    )
+}
+
+/**
+ * Public composable that accepts UI state and callbacks - for testing and previews
+ */
 @Composable
 fun FavouritesScreen(
     posts: List<Post>,

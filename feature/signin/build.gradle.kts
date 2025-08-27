@@ -8,5 +8,9 @@ android {
 }
 
 dependencies {
-
+    // Testing dependencies
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.test.mockito.core)
+    testImplementation(libs.test.mockito.kotlin)
+    testImplementation(libs.test.arch.core.testing)
 }
