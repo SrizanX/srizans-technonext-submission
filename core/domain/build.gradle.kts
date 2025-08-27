@@ -11,6 +11,7 @@ dependencies {
     implementation(libs.androidx.datastore.core)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.androidx.paging.common)
+    implementation(libs.javax.inject)
 
     // Testing dependencies
     testImplementation(libs.kotlinx.coroutines.test)

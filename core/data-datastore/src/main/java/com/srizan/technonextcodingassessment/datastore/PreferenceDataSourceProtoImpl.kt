@@ -13,25 +13,49 @@ import com.srizan.technonextcodingassessment.datastore.AppThemeConfig as ProtoAp
 
 
 val Context.appsProtoPrefs: DataStore<AppsProtoPrefs> by dataStore(
-    fileName = "app_prefs.pb", serializer = AppsProtoPrefsSerializer
+    fileName = "app_prefs.pb", 
+    serializer = AppsProtoPrefsSerializer
 )
 
+/**
+ * Implementation of PreferenceDataSource using Protocol Buffers with DataStore.
+ * 
+ * This class provides type-safe, efficient storage for application preferences
+ * using Protocol Buffers serialization. It handles user authentication state,
+ * theme preferences, and other app-level configurations.
+ * 
+ * Benefits of Proto DataStore over SharedPreferences:
+ * - Type safety with compile-time guarantees
+ * - Better performance for complex data structures  
+ * - Atomic read/write operations
+ * - Built-in data migration support
+ */
 class PreferenceDataSourceProtoImpl @Inject constructor(
-    @ApplicationContext val context: Context
+    @param:ApplicationContext private val context: Context
 ) : PreferenceDataSource {
     /**
-     * Get the user name from the data store.
+     * Retrieves the user's email address from preferences.
+     * @return Flow<String?> The user's email, or null if not set
      */
     override fun getUserEmail() = context.appsProtoPrefs.data.map {
         it.userEmail
     }
 
+    /**
+     * Stores the user's email address in preferences.
+     * @param email The email address to store
+     */
     override suspend fun setUserEmail(email: String) {
         context.appsProtoPrefs.updateData { currentSettings ->
             currentSettings.toBuilder().setUserEmail(email).build()
         }
     }
 
+    /**
+     * Retrieves the current app theme configuration.
+     * Maps from Proto enum to domain model enum.
+     * @return Flow<AppThemeConfig> The current theme configuration
+     */
     override fun getAppThemeConfig(): Flow<AppThemeConfig> {
         return context.appsProtoPrefs.data.map {
             when (it.appThemeConfig) {
@@ -43,6 +67,11 @@ class PreferenceDataSourceProtoImpl @Inject constructor(
         }
     }
 
+    /**
+     * Updates the app theme configuration.
+     * Maps from domain model enum to Proto enum.
+     * @param themeConfig The new theme configuration to apply
+     */
     override suspend fun setAppThemeConfig(themeConfig: AppThemeConfig) {
         context.appsProtoPrefs.updateData { currentSettings ->
             val protoThemeConfig = when (themeConfig) {
@@ -54,16 +83,28 @@ class PreferenceDataSourceProtoImpl @Inject constructor(
         }
     }
 
+    /**
+     * Clears all stored preferences.
+     * This is typically called during user logout.
+     */
     override suspend fun clearPreferences() {
         context.appsProtoPrefs.updateData { currentSettings ->
             currentSettings.toBuilder().clear().build()
         }
     }
 
+    /**
+     * Checks if the user is currently logged in.
+     * @return Flow<Boolean?> The login status, or null if not set
+     */
     override fun isUserLoggedIn() = context.appsProtoPrefs.data.map {
         it.isUserLoggedIn
     }
 
+    /**
+     * Updates the user's login status.
+     * @param loggedIn true if user is logged in, false otherwise
+     */
     override suspend fun setUserLoggedInStatus(loggedIn: Boolean) {
         context.appsProtoPrefs.updateData { currentSettings ->
             currentSettings.toBuilder().setIsUserLoggedIn(loggedIn).build()

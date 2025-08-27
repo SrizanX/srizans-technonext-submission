@@ -2,7 +2,7 @@ package com.srizan.technonextcodingassessment.signup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.srizan.technonextcodingassessment.domain.repository.AuthenticationRepository
+import com.srizan.technonextcodingassessment.domain.usecase.SignUpUseCase
 import com.srizan.technonextcodingassessment.domain.validation.PasswordStrength
 import com.srizan.technonextcodingassessment.domain.validation.ValidationRules
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-    private val authenticationRepository: AuthenticationRepository
+    private val signUpUseCase: SignUpUseCase
 ) : ViewModel() {
 
     // UI state
@@ -56,7 +56,7 @@ class SignUpViewModel @Inject constructor(
             }
 
             // Perform registration
-            authenticationRepository.signUp(email, password).fold(onSuccess = {
+            signUpUseCase(email, password).fold(onSuccess = {
                 _uiState.value = _uiState.value.copy(isLoading = false)
                 _uiEvent.send(UiEvent.RegisterSuccess)
             }, onFailure = { exception ->

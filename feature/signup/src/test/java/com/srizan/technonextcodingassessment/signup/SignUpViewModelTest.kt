@@ -1,7 +1,7 @@
 package com.srizan.technonextcodingassessment.signup
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.srizan.technonextcodingassessment.domain.repository.AuthenticationRepository
+import com.srizan.technonextcodingassessment.domain.usecase.SignUpUseCase
 import com.srizan.technonextcodingassessment.domain.validation.PasswordStrength
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -35,7 +35,7 @@ class SignUpViewModelTest {
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     @Mock
-    private lateinit var authenticationRepository: AuthenticationRepository
+    private lateinit var signUpUseCase: SignUpUseCase
 
     private lateinit var viewModel: SignUpViewModel
     private val testDispatcher = StandardTestDispatcher()
@@ -44,7 +44,7 @@ class SignUpViewModelTest {
     fun setUp() {
         MockitoAnnotations.openMocks(this)
         Dispatchers.setMain(testDispatcher)
-        viewModel = SignUpViewModel(authenticationRepository)
+        viewModel = SignUpViewModel(signUpUseCase)
     }
 
     @After
@@ -239,7 +239,7 @@ class SignUpViewModelTest {
         val validEmail = "test@example.com"
         val strongPassword = "StrongPass123!"
         
-        whenever(authenticationRepository.signUp(validEmail, strongPassword))
+        whenever(signUpUseCase(validEmail, strongPassword))
             .thenReturn(Result.success(Unit))
         
         viewModel.register(validEmail, strongPassword, strongPassword)
@@ -301,7 +301,7 @@ class SignUpViewModelTest {
         val validEmail = "test@example.com"
         val strongPassword = "StrongPass123!"
         
-        whenever(authenticationRepository.signUp(validEmail, strongPassword))
+        whenever(signUpUseCase(validEmail, strongPassword))
             .thenReturn(Result.success(Unit))
         
         // Verify initial state is not loading
@@ -326,7 +326,7 @@ class SignUpViewModelTest {
         val strongPassword = "StrongPass123!"
         val errorMessage = "Registration failed due to network error"
         
-        whenever(authenticationRepository.signUp(validEmail, strongPassword))
+        whenever(signUpUseCase(validEmail, strongPassword))
             .thenReturn(Result.failure(Exception(errorMessage)))
         
         viewModel.register(validEmail, strongPassword, strongPassword)
@@ -342,7 +342,7 @@ class SignUpViewModelTest {
         val validEmail = "test@example.com"
         val strongPassword = "StrongPass123!"
         
-        whenever(authenticationRepository.signUp(validEmail, strongPassword))
+        whenever(signUpUseCase(validEmail, strongPassword))
             .thenReturn(Result.failure(Exception()))
         
         viewModel.register(validEmail, strongPassword, strongPassword)

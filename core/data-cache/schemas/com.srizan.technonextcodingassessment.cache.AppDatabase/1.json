@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "f49a0fbf5ecc1696415d296b49eff92b",
+    "identityHash": "cd0eaa5986f8ead5e824e431446f2e56",
     "entities": [
       {
         "tableName": "posts",
@@ -44,7 +44,36 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [
+          {
+            "name": "index_posts_userId",
+            "unique": false,
+            "columnNames": [
+              "userId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_posts_userId` ON `${TABLE_NAME}` (`userId`)"
+          },
+          {
+            "name": "index_posts_isFavourite",
+            "unique": false,
+            "columnNames": [
+              "isFavourite"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_posts_isFavourite` ON `${TABLE_NAME}` (`isFavourite`)"
+          },
+          {
+            "name": "index_posts_title",
+            "unique": false,
+            "columnNames": [
+              "title"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_posts_title` ON `${TABLE_NAME}` (`title`)"
+          }
+        ]
       },
       {
         "tableName": "users",
@@ -73,7 +102,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f49a0fbf5ecc1696415d296b49eff92b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cd0eaa5986f8ead5e824e431446f2e56')"
     ]
   }
 }
