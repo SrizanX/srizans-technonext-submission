@@ -10,7 +10,7 @@ message AppsProtoPrefs {
 
 
 enum AppThemeConfig {
-  LIGHT = 0;
-  DARK = 1;
-  SYSTEM = 2;
+  SYSTEM = 0;
+  LIGHT = 1;
+  DARK = 2;
 }

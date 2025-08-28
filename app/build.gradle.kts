@@ -25,7 +25,5 @@ dependencies {
         implementation(postsFavourites)
         implementation(profile)
     }
-
-    implementation(libs.androidx.core.splashscreen)
     implementation(libs.timber)
 }

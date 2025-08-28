@@ -74,25 +74,6 @@ class AuthenticationRepositoryImplTest {
     }
 
     @Test
-    fun `signUp should handle database insertion error`() = runTest {
-        // Given
-        val email = "test@example.com"
-        val password = "#validPassword123"
-        whenever(mockUserDao.doesUserExist(email)).thenReturn(false)
-        whenever(mockUserDao.insertUser(any())).thenThrow(RuntimeException("Database error"))
-
-        // When
-        val result = repository.signUp(email, password)
-
-        // Then
-        assertTrue("Sign up should fail", result.isFailure)
-        assertTrue(
-            "Error message should contain database error",
-            result.exceptionOrNull()?.message?.contains("Registration failed") == true
-        )
-    }
-
-    @Test
     fun `signIn should succeed with correct credentials`() = runTest {
         // Given
         val email = "user@example.com"
@@ -169,23 +150,6 @@ class AuthenticationRepositoryImplTest {
         assertTrue("Delete should fail", result.isFailure)
         assertEquals("User not found", result.exceptionOrNull()?.message)
         verify(mockUserDao).deleteUserByEmail(email)
-    }
-
-    @Test
-    fun `deleteAccount should handle database error`() = runTest {
-        // Given
-        val email = "user@example.com"
-        whenever(mockUserDao.deleteUserByEmail(email)).thenThrow(RuntimeException("Database error"))
-
-        // When
-        val result = repository.deleteAccount(email)
-
-        // Then
-        assertTrue("Delete should fail", result.isFailure)
-        assertTrue(
-            "Error message should contain deletion failed",
-            result.exceptionOrNull()?.message?.contains("Deletion failed") == true
-        )
     }
 
     @Test

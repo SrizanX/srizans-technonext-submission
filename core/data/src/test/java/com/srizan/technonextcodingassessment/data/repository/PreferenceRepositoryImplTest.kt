@@ -15,7 +15,6 @@ import org.mockito.kotlin.whenever
 
 /**
  * Tests for PreferenceRepositoryImpl - Real preference coordination logic
- * These tests are meaningful because they test data transformation and coordination between layers
  */
 class PreferenceRepositoryImplTest {
 

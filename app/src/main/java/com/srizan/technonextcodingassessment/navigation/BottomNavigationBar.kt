@@ -24,8 +24,7 @@ fun BottomNavigationBar(
 ) {
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStackEntry?.destination
-    val startDestination = Destination.POSTS
-    var selectedDestination by rememberSaveable { mutableIntStateOf(startDestination.ordinal) }
+    var selectedDestination by rememberSaveable { mutableIntStateOf(Destination.POSTS.ordinal) }
 
     AnimatedVisibility(
         visible = NavUtils.shouldShowBottomBar(currentDestination),
