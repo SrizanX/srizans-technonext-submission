@@ -26,4 +26,7 @@ dependencies {
         implementation(profile)
     }
     implementation(libs.timber)
+
+    androidTestImplementation("androidx.test.uiautomator:uiautomator:2.4.0-alpha05")
+
 }
